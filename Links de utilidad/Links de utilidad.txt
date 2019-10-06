@@ -2,4 +2,5 @@ https://www.youtube.com/watch?v=WWzf3HUl6nI	App appinventor control del brazo y 
 https://www.youtube.com/watch?v=OO7vKKuJ9a0	appinventor ejemplo general con comunicacion bluetooth
 https://www.thingiverse.com/thing:2153317	Modelo 3d del brazo
 https://www.mecatronicalatam.com/motores/motor-paso-a-paso	Tipo de ondas para motores paso a paso ejemplo ayarde
+https://articulo.mercadolibre.com.ar/MLA-705961852-sensor-optico-reflectivo-infrarrojo-tcrt5000-nubbeo-_JM?quantity=1#reco_item_pos=1&reco_backend=machinalis-seller-items&reco_backend_type=low_level&reco_client=vip-seller_items-above&reco_id=5f4c2f82-fa62-497d-b669-234690ed28f7		Link de sensor optico reflectiv( deteccion de cercania)
 
