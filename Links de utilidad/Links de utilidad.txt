@@ -1,1 +1,5 @@
-https://www.youtube.com/watch?v=WWzf3HUl6nI
+https://www.youtube.com/watch?v=WWzf3HUl6nI	App appinventor control del brazo y comunicacion bluetooth
+https://www.youtube.com/watch?v=OO7vKKuJ9a0	appinventor ejemplo general con comunicacion bluetooth
+https://www.thingiverse.com/thing:2153317	Modelo 3d del brazo
+https://www.mecatronicalatam.com/motores/motor-paso-a-paso	Tipo de ondas para motores paso a paso ejemplo ayarde
+
