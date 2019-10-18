@@ -13,13 +13,27 @@
 #include "lpc17xx_timer.h"
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_pwm.h"
+#include "servo_motors.h"
 
 void confUart(void);
 void confPin(void);
 void confPWM(void);
-#define STD_PERIOD 100
+
+#define STD_PERIOD 300
+
+uint8_t inte = 0;
 
 int main(void) {
+	Servo_Motor servo_motor;
+	servo_motor.match_ch = 1;
+	servo_motor.tic_period = 100;
+	servo_motor.duty_cycle = 13;
+	servo_motor.cycle = 200;
+	servo_motor.inf_limit = 13;
+	servo_motor.sup_limit = 35;
+	servo_init(&servo_motor);
+	servo_pin_start(&servo_motor);
+
 	confPin();
 	confUart();
 	Motor motor_0;
@@ -33,6 +47,9 @@ int main(void) {
 	motor_0.m2_us_pinnum = 4;
 	motor_0.m3_us_pinnum = 5;
 	motor_0.timer = LPC_TIM0;
+	motor_0.enable_portnum = 0;
+	motor_0.enable_pinnum = 11;
+
 
 	Motor motor_1;
 	motor_1.number = 1;
@@ -44,12 +61,13 @@ int main(void) {
 	motor_1.m1_us_pinnum = 8;
 	motor_1.m2_us_pinnum = 10;
 	motor_1.m3_us_pinnum = 11;
+	motor_1.enable_portnum = 2;
+	motor_1.enable_pinnum = 12;
 	motor_1.timer = LPC_TIM0;
 
 	motor_config(&motor_0);
 	motor_config(&motor_1);
 	motor_timer_init(&motor_0, STD_PERIOD);
-	//motor_init(&motor_1, STD_PERIOD);
 	micro_stepping_cfg(&motor_0, 1, 1, 1);
 	micro_stepping_cfg(&motor_1, 1, 1, 1);
 	start_motor_timer(&motor_0);
@@ -57,7 +75,13 @@ int main(void) {
 	confPWM();
 
 	while(1){
-
+		uint32_t aux = servo_motor.duty_cycle;
+		if(inte)
+			servo_motor.duty_cycle = 35;
+		else
+			servo_motor.duty_cycle =13;
+		if(servo_motor.duty_cycle !=aux)
+			servo_update_duty_cycle(&servo_motor);
 	}
 
 	return 0 ;
@@ -142,22 +166,25 @@ void UART0_IRQHandler(void){
 		Motor motor0 = get_motor(0);
 		Motor motor1 = get_motor(1);
 		switch(info[0]){
-		case '0' :
+		case '0':
+			inte = (inte)? 0:1;
+			break;
+		case '1' :
 			start_steps(&(motor0),HORARIA);
 			break;
-		case '1':
+		case '2':
 			start_steps(&motor0,ANTI_HORARIA);
 			break;
-		case '2' :
+		case '3' :
 			stop_steps(&motor0);
 			break;
-		case '3' :
+		case '4' :
 			start_steps(&motor1,HORARIA);
 			break;
-		case '4':
+		case '5':
 			start_steps(&motor1,ANTI_HORARIA);
 			break;
-		case '5' :
+		case '6' :
 			stop_steps(&motor1);
 			break;
 		}

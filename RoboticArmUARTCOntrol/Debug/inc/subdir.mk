@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../inc/servo_motors.c \
 ../inc/stepper_motors.c 
 
 OBJS += \
+./inc/servo_motors.o \
 ./inc/stepper_motors.o 
 
 C_DEPS += \
+./inc/servo_motors.d \
 ./inc/stepper_motors.d 
 
 
