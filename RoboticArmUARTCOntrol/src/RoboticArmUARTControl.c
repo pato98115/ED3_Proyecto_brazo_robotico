@@ -14,28 +14,60 @@
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_pwm.h"
 #include "servo_motors.h"
+#include "lpc17xx_systick.h"
+
+typedef enum{
+	AGARRAR =0,
+	SOLTAR
+} Garra_Cmd;
+
+typedef enum{
+	GRABACION =0,
+	REPETICION,
+	MANUAL
+}  Estados;
+
+typedef enum{
+	AGARRAROSOLTAR =48,
+	M0HORARIO,
+	M0ANTIHORARIO,
+	M0DETENER,
+	M1HORARIO,
+	M1ANTIHORARIO,
+	M1DETENER,
+	M2HORARIO,
+	M2ANTIHORARIO,
+	M2DETENER,
+	M3HORARIO,
+	M3ANTIHORARIO,
+	M3DETENER,
+	GRABARMOVIMIENTO,
+	DETENERYEJECUTAR,
+} UART_Cmd;
 
 void confUart(void);
-void confPin(void);
-void confPWM(void);
+void confSteppers(void);
+void confServo(Servo_Motor *);
+void garraCmd(Servo_Motor * , Garra_Cmd);
+
 
 #define STD_PERIOD 300
 
-uint8_t inte = 0;
 
 int main(void) {
-	Servo_Motor servo_motor;
-	servo_motor.match_ch = 1;
-	servo_motor.tic_period = 100;
-	servo_motor.duty_cycle = 13;
-	servo_motor.cycle = 200;
-	servo_motor.inf_limit = 13;
-	servo_motor.sup_limit = 35;
-	servo_init(&servo_motor);
-	servo_pin_start(&servo_motor);
-
-	confPin();
 	confUart();
+	confSteppers();
+	Servo_Motor servo_motor;
+	confServo(&servo_motor);
+	SysTick_Config(SystemCoreClock/30);
+	SYSTICK_IntCmd(DISABLE);
+	while(1){
+
+	}
+	return 0 ;
+}
+
+void confSteppers(void){
 	Motor motor_0;
 	motor_0.number = 0;
 	motor_0.dir_portnum = 2;
@@ -71,20 +103,65 @@ int main(void) {
 	micro_stepping_cfg(&motor_0, 1, 1, 1);
 	micro_stepping_cfg(&motor_1, 1, 1, 1);
 	start_motor_timer(&motor_0);
+	return;
+}
 
-	confPWM();
+void confServo(Servo_Motor* servo_motor){
+	servo_motor->match_ch = 1;
+	servo_motor->tic_period = 100;
+	servo_motor->duty_cycle = 14;
+	servo_motor->cycle = 200;
+	servo_motor->inf_limit = 14;
+	servo_motor->sup_limit = 30;
+	servo_motor->estado = ABIERTO;
+	servo_init(servo_motor);
+	servo_pin_start(servo_motor);
+	put_servo_motor(servo_motor);
+	return;
+}
 
-	while(1){
-		uint32_t aux = servo_motor.duty_cycle;
-		if(inte)
-			servo_motor.duty_cycle = 35;
-		else
-			servo_motor.duty_cycle =13;
-		if(servo_motor.duty_cycle !=aux)
-			servo_update_duty_cycle(&servo_motor);
+void garraCmd(Servo_Motor* servo_motor,Garra_Cmd comando){
+	uint8_t duty,cerrado,abierto;
+	duty = servo_motor->duty_cycle;
+	cerrado = servo_motor->sup_limit;
+	abierto = servo_motor->inf_limit;
+	switch(comando){
+	case AGARRAR:
+		if(duty <= cerrado){
+			SYSTICK_IntCmd(ENABLE);
+			servo_motor->estado = CERRANDO;
+		}
+		break;
+	case SOLTAR:
+		if(duty >= abierto){
+			SYSTICK_IntCmd(ENABLE);
+			servo_motor->estado = ABRIENDO;
+		}
+		break;
 	}
+	return;
+}
 
-	return 0 ;
+void SysTick_Handler(void){
+	Servo_Motor* servo_motor = get_servo_motor(1);
+	if(servo_motor->estado == CERRANDO){
+		if(servo_motor->duty_cycle < servo_motor->sup_limit)
+			servo_motor->duty_cycle++;
+		else{
+			servo_motor->estado= CERRADO;
+			SYSTICK_IntCmd(DISABLE);
+		}
+	}
+	else{
+		if(servo_motor->duty_cycle > servo_motor->inf_limit)
+			servo_motor->duty_cycle --;
+		else{
+			servo_motor->estado= ABIERTO;
+			SYSTICK_IntCmd(DISABLE);
+		}
+	}
+	servo_update_duty_cycle(servo_motor);
+	return;
 }
 
 void TIMER0_IRQHandler(void){
@@ -98,22 +175,31 @@ void TIMER0_IRQHandler(void){
 	return;
 }
 
-void TIMER1_IRQHandler(void){
-	TIM_ClearIntPending(LPC_TIM1, TIM_MR0_INT);
-	for(uint8_t i = 0; i < 4; i++){
-		if(get_motor_flag(i) == 1){
-			Motor motor = get_motor(i);
-			do_step(&motor);
-		}
-	}
-	return;
-}
+//void TIMER1_IRQHandler(void){
+//	TIM_ClearIntPending(LPC_TIM1, TIM_MR0_INT);
+//	for(uint8_t i = 0; i < 4; i++){
+//		if(get_motor_flag(i) == 1){
+//			Motor motor = get_motor(i);
+//			do_step(&motor);
+//		}
+//	}
+//	return;
+//}
 
-void confPWM(void){
 
-}
 
 void confUart(void){
+	PINSEL_CFG_Type PinCfg;
+	//configuración pin de Tx y Rx
+	PinCfg.Funcnum = 1;
+	PinCfg.OpenDrain = 0;
+	PinCfg.Pinmode = 0;
+	PinCfg.Pinnum = 2;
+	PinCfg.Portnum = 0;
+	PINSEL_ConfigPin(&PinCfg);
+	PinCfg.Pinnum = 3;
+	PINSEL_ConfigPin(&PinCfg);
+
 	UART_CFG_Type UARTConfigStruct;
 	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
 	//configuración por defecto:
@@ -136,22 +222,7 @@ void confUart(void){
 	return;
 }
 
-void confPin(void){
-	PINSEL_CFG_Type PinCfg;
-	//configuración pin de Tx y Rx
-	PinCfg.Funcnum = 1;
-	PinCfg.OpenDrain = 0;
-	PinCfg.Pinmode = 0;
-	PinCfg.Pinnum = 2;
-	PinCfg.Portnum = 0;
-	PINSEL_ConfigPin(&PinCfg);
-	PinCfg.Pinnum = 3;
-	PINSEL_ConfigPin(&PinCfg);
-	PinCfg.Portnum = 2;
-	PinCfg.Pinnum = 0;
-	PINSEL_ConfigPin(&PinCfg);
-	return;
-}
+
 
 void UART0_IRQHandler(void){
 	uint32_t intscr,tmp;
@@ -165,26 +236,31 @@ void UART0_IRQHandler(void){
 		UART_Send(LPC_UART0,info,sizeof(info),NONE_BLOCKING);
 		Motor motor0 = get_motor(0);
 		Motor motor1 = get_motor(1);
+		Servo_Motor *servo_motor;
 		switch(info[0]){
-		case '0':
-			inte = (inte)? 0:1;
+		case AGARRAROSOLTAR:
+			servo_motor = get_servo_motor(1);
+			if(((servo_motor->estado) == CERRADO )||((servo_motor->estado) == CERRANDO ))
+				garraCmd(servo_motor,SOLTAR);
+			else
+				garraCmd(servo_motor,AGARRAR);
 			break;
-		case '1' :
+		case M0HORARIO :
 			start_steps(&(motor0),HORARIA);
 			break;
-		case '2':
+		case M0ANTIHORARIO:
 			start_steps(&motor0,ANTI_HORARIA);
 			break;
-		case '3' :
+		case M0DETENER :
 			stop_steps(&motor0);
 			break;
-		case '4' :
+		case M1HORARIO :
 			start_steps(&motor1,HORARIA);
 			break;
-		case '5':
+		case M1ANTIHORARIO:
 			start_steps(&motor1,ANTI_HORARIA);
 			break;
-		case '6' :
+		case M1DETENER :
 			stop_steps(&motor1);
 			break;
 		}

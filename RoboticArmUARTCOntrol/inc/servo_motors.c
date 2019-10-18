@@ -176,6 +176,29 @@ void servo_update_duty_cycle(Servo_Motor *servo){
 	return;
 }
 
+Servo_Motor *get_servo_motor(uint8_t match_ch){
+	Servo_Motor aux;
+	aux.match_ch = match_ch;
+	return servo_motors(&aux, GET);
+}
+void put_servo_motor(Servo_Motor *servo){
+	servo_motors(servo, PUT);
+	return;
+}
+Servo_Motor *servo_motors(Servo_Motor *servo, uint8_t put_get){
+	static Servo_Motor *motors_list[7];
+	if(put_get == PUT){ //agregar un motor
+		motors_list[servo->match_ch] = servo;
+		return servo;
+	}
+	else if(put_get == GET){//devolver un motor
+		return motors_list[servo->match_ch];
+	}
+	else{
+		while(1){}
+		return motors_list[0];
+	}
+}
 
 
 

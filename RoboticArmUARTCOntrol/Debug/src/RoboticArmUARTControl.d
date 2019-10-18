@@ -12,7 +12,8 @@ src/RoboticArmUARTControl.o src/RoboticArmUARTControl.d: \
  C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Drivers\inc/lpc17xx_pinsel.h \
  C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\inc/lpc17xx.h \
  C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Drivers\inc/lpc17xx_pwm.h \
- C:\Users\nacho\Documents\Nacho\Electronica\ Digital\ 3\ED3_Proyecto_brazo_robotico\RoboticArmUARTCOntrol\inc/servo_motors.h
+ C:\Users\nacho\Documents\Nacho\Electronica\ Digital\ 3\ED3_Proyecto_brazo_robotico\RoboticArmUARTCOntrol\inc/servo_motors.h \
+ C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Drivers\inc/lpc17xx_systick.h
 
 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\inc/LPC17xx.h:
 
@@ -39,3 +40,5 @@ C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx
 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Drivers\inc/lpc17xx_pwm.h:
 
 C:\Users\nacho\Documents\Nacho\Electronica\ Digital\ 3\ED3_Proyecto_brazo_robotico\RoboticArmUARTCOntrol\inc/servo_motors.h:
+
+C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Drivers\inc/lpc17xx_systick.h:
