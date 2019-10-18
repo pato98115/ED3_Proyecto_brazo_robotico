@@ -12,6 +12,7 @@
 #include "lpc17xx_timer.h"
 #include "lpc17xx_gpio.h"
 #include "lpc17xx_pinsel.h"
+#include "stepper_motors.h"
 
 void delay(uint32_t tics);
 
@@ -19,23 +20,29 @@ void delay(uint32_t tics);
  * Configura los pines a partir del motor
  */
 void motor_config(Motor *motor){
-	if((motor->dir_pinnum == motor->step_pinnum) && (motor->dir_portnum == motor->step_portnum)){
-		while(1){} //ERROR dir pin == step pin
+	if(((motor->dir_pinnum == motor->step_pinnum) && (motor->dir_portnum == motor->step_portnum))
+	||((motor->enable_pinnum == motor->step_pinnum) && (motor->enable_portnum == motor->step_portnum))
+	||((motor->enable_pinnum == motor->dir_pinnum) && (motor->enable_portnum == motor->dir_portnum)))
+	{
+		while(1){} //ERROR coincidencia de pines
 	}
 	PINSEL_CFG_Type pin_cfg;
+	//config dir pin
 	pin_cfg.Funcnum = PINSEL_FUNC_0;
 	pin_cfg.OpenDrain = PINSEL_PINMODE_NORMAL;
 	pin_cfg.Pinmode = PINSEL_PINMODE_PULLUP;
 	pin_cfg.Portnum = motor->dir_portnum;
 	pin_cfg.Pinnum = motor->dir_pinnum;
-	//config dir pin del motor
 	PINSEL_ConfigPin(&pin_cfg);
-
+	//config step pin
 	pin_cfg.Portnum = motor->step_portnum;
 	pin_cfg.Pinnum = motor->step_pinnum;
-	//config step pin del motor
 	PINSEL_ConfigPin(&pin_cfg);
-	//configura el microstepping
+	//config enable pin
+	pin_cfg.Portnum = motor->enable_portnum;
+	pin_cfg.Pinnum = motor->enable_pinnum;
+	PINSEL_ConfigPin(&pin_cfg);
+	//config microstepping
 	pin_cfg.Portnum = motor->m_us_portnum;
 	pin_cfg.Pinnum = motor->m1_us_pinnum;
 	PINSEL_ConfigPin(&pin_cfg);
@@ -46,6 +53,7 @@ void motor_config(Motor *motor){
 	//configura gpio outputs
 	GPIO_SetDir(motor->dir_portnum, (1 << motor->dir_pinnum), 1);
 	GPIO_SetDir(motor->step_portnum, (1 << motor->step_pinnum), 1);
+	GPIO_SetDir(motor->enable_portnum, (1 << motor->enable_pinnum), 1);
 	GPIO_SetDir(motor->m_us_portnum, (1 << motor->m1_us_pinnum), 1);
 	GPIO_SetDir(motor->m_us_portnum, (1 << motor->m2_us_pinnum), 1);
 	GPIO_SetDir(motor->m_us_portnum, (1 << motor->m3_us_pinnum), 1);
@@ -90,6 +98,7 @@ void micro_stepping_cfg(Motor *motor, uint8_t m1, uint8_t m2, uint8_t m3){//conf
 
 void stop_steps(Motor *motor){
 	clear_step_flag(motor->number);
+	GPIO_SetValue(motor->enable_portnum, (1<< motor->enable_pinnum));//levanta pin enable, activa el driver
 }
 
 /*
@@ -102,6 +111,7 @@ void start_steps(Motor *motor, uint8_t direction){
 	else if(direction == HORARIA)
 		GPIO_ClearValue(motor->dir_portnum, (1<< motor->dir_pinnum));
 	set_step_flag(motor->number); //abria que hacer parecido a la funcion motors
+	GPIO_ClearValue(motor->enable_portnum, (1<< motor->enable_pinnum)); //baja pin enable, activa el driver
 	return;
 }
 /*
@@ -210,9 +220,7 @@ uint8_t coincidence(Motor motor_a, Motor motor_b){ //devuelve 1 si coinciden en 
 	else return 0; //no hay coincidencia critica, todo OK
 }
 /*
- * NO SE BIEN COMO FUNCIONA EL STEP EN EL DRIVER
- * SI ES POR FLANCO DE SUBIDA O BAJADA O AMBOS
- * VOY A SUPONER QUE ES FLANCO DE SUBIDA
+ * Realiza un step
  */
 void do_step(Motor* motor){
 	GPIO_SetValue(motor->step_portnum, (1<< motor->step_pinnum));

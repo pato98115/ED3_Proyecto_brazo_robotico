@@ -16,6 +16,8 @@ typedef struct{
 	uint8_t dir_portnum;
 	uint8_t step_pinnum;
 	uint8_t step_portnum;
+	uint8_t enable_pinnum;
+	uint8_t enable_portnum;
 	uint8_t m_us_portnum;
 	uint8_t m1_us_pinnum;
 	uint8_t m2_us_pinnum;
