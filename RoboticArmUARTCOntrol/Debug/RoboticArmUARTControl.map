@@ -421,7 +421,7 @@ END GROUP
                 0x20084000                __top_RamAHB32 = 0x20084000
                 0x20084000                __top_RAM2 = 0x20084000
 
-.text           0x00000000     0x181c
+.text           0x00000000     0x182c
  FILL mask 0xff
                 0x00000000                __vectors_start__ = ABSOLUTE (.)
  *(.isr_vector)
@@ -430,10 +430,10 @@ END GROUP
                 0x000000cc                . = ALIGN (0x4)
                 0x000000cc                __section_table_start = .
                 0x000000cc                __data_section_table = .
-                0x000000cc        0x4 LONG 0x181c LOADADDR (.data)
+                0x000000cc        0x4 LONG 0x182c LOADADDR (.data)
                 0x000000d0        0x4 LONG 0x10000000 ADDR (.data)
                 0x000000d4        0x4 LONG 0x4 SIZEOF (.data)
-                0x000000d8        0x4 LONG 0x181c LOADADDR (.data_RAM2)
+                0x000000d8        0x4 LONG 0x182c LOADADDR (.data_RAM2)
                 0x000000dc        0x4 LONG 0x2007c000 ADDR (.data_RAM2)
                 0x000000e0        0x4 LONG 0x0 SIZEOF (.data_RAM2)
                 0x000000e4                __data_section_table_end = .
@@ -495,204 +495,206 @@ END GROUP
  *(.text*)
  .text.NVIC_EnableIRQ
                 0x00000238       0x30 ./src/RoboticArmUARTControl.o
- .text.main     0x00000268       0xa8 ./src/RoboticArmUARTControl.o
+ .text.main     0x00000268       0xac ./src/RoboticArmUARTControl.o
                 0x00000268                main
  .text.TIMER0_IRQHandler
-                0x00000310       0x4c ./src/RoboticArmUARTControl.o
-                0x00000310                TIMER0_IRQHandler
+                0x00000314       0x4c ./src/RoboticArmUARTControl.o
+                0x00000314                TIMER0_IRQHandler
  .text.TIMER1_IRQHandler
-                0x0000035c       0x50 ./src/RoboticArmUARTControl.o
-                0x0000035c                TIMER1_IRQHandler
+                0x00000360       0x50 ./src/RoboticArmUARTControl.o
+                0x00000360                TIMER1_IRQHandler
+ .text.confPWM  0x000003b0        0xc ./src/RoboticArmUARTControl.o
+                0x000003b0                confPWM
  .text.confUart
-                0x000003ac       0x70 ./src/RoboticArmUARTControl.o
-                0x000003ac                confUart
- .text.confPin  0x0000041c       0x48 ./src/RoboticArmUARTControl.o
-                0x0000041c                confPin
+                0x000003bc       0x70 ./src/RoboticArmUARTControl.o
+                0x000003bc                confUart
+ .text.confPin  0x0000042c       0x48 ./src/RoboticArmUARTControl.o
+                0x0000042c                confPin
  .text.UART0_IRQHandler
-                0x00000464       0xe0 ./src/RoboticArmUARTControl.o
-                0x00000464                UART0_IRQHandler
+                0x00000474       0xe0 ./src/RoboticArmUARTControl.o
+                0x00000474                UART0_IRQHandler
  .text.NVIC_EnableIRQ
-                0x00000544       0x30 ./inc/stepper_motors.o
+                0x00000554       0x30 ./inc/stepper_motors.o
  .text.motor_config
-                0x00000574      0x10c ./inc/stepper_motors.o
-                0x00000574                motor_config
+                0x00000584      0x10c ./inc/stepper_motors.o
+                0x00000584                motor_config
  .text.motor_timer_init
-                0x00000680       0x3c ./inc/stepper_motors.o
-                0x00000680                motor_timer_init
+                0x00000690       0x3c ./inc/stepper_motors.o
+                0x00000690                motor_timer_init
  .text.start_motor_timer
-                0x000006bc       0x1c ./inc/stepper_motors.o
-                0x000006bc                start_motor_timer
+                0x000006cc       0x1c ./inc/stepper_motors.o
+                0x000006cc                start_motor_timer
  .text.micro_stepping_cfg
-                0x000006d8       0xc0 ./inc/stepper_motors.o
-                0x000006d8                micro_stepping_cfg
+                0x000006e8       0xc0 ./inc/stepper_motors.o
+                0x000006e8                micro_stepping_cfg
  .text.stop_steps
-                0x00000798       0x1c ./inc/stepper_motors.o
-                0x00000798                stop_steps
+                0x000007a8       0x1c ./inc/stepper_motors.o
+                0x000007a8                stop_steps
  .text.start_steps
-                0x000007b4       0x58 ./inc/stepper_motors.o
-                0x000007b4                start_steps
+                0x000007c4       0x58 ./inc/stepper_motors.o
+                0x000007c4                start_steps
  .text.get_motor
-                0x0000080c       0x28 ./inc/stepper_motors.o
-                0x0000080c                get_motor
+                0x0000081c       0x28 ./inc/stepper_motors.o
+                0x0000081c                get_motor
  .text.put_motor
-                0x00000834       0x1c ./inc/stepper_motors.o
-                0x00000834                put_motor
- .text.motors   0x00000850       0x64 ./inc/stepper_motors.o
-                0x00000850                motors
+                0x00000844       0x1c ./inc/stepper_motors.o
+                0x00000844                put_motor
+ .text.motors   0x00000860       0x64 ./inc/stepper_motors.o
+                0x00000860                motors
  .text.set_step_flag
-                0x000008b4       0x20 ./inc/stepper_motors.o
-                0x000008b4                set_step_flag
+                0x000008c4       0x20 ./inc/stepper_motors.o
+                0x000008c4                set_step_flag
  .text.clear_step_flag
-                0x000008d4       0x20 ./inc/stepper_motors.o
-                0x000008d4                clear_step_flag
+                0x000008e4       0x20 ./inc/stepper_motors.o
+                0x000008e4                clear_step_flag
  .text.get_motor_flag
-                0x000008f4       0x20 ./inc/stepper_motors.o
-                0x000008f4                get_motor_flag
+                0x00000904       0x20 ./inc/stepper_motors.o
+                0x00000904                get_motor_flag
  .text.motor_flags
-                0x00000914       0x44 ./inc/stepper_motors.o
-                0x00000914                motor_flags
- .text.do_step  0x00000958       0x44 ./inc/stepper_motors.o
-                0x00000958                do_step
+                0x00000924       0x44 ./inc/stepper_motors.o
+                0x00000924                motor_flags
+ .text.do_step  0x00000968       0x44 ./inc/stepper_motors.o
+                0x00000968                do_step
  .text.config_timer_useg
-                0x0000099c       0x34 ./inc/stepper_motors.o
-                0x0000099c                config_timer_useg
+                0x000009ac       0x34 ./inc/stepper_motors.o
+                0x000009ac                config_timer_useg
  .text.config_match
-                0x000009d0       0x38 ./inc/stepper_motors.o
-                0x000009d0                config_match
+                0x000009e0       0x38 ./inc/stepper_motors.o
+                0x000009e0                config_match
  .text.get_IRQn
-                0x00000a08       0x50 ./inc/stepper_motors.o
-                0x00000a08                get_IRQn
- .text.delay    0x00000a58       0x28 ./inc/stepper_motors.o
-                0x00000a58                delay
+                0x00000a18       0x50 ./inc/stepper_motors.o
+                0x00000a18                get_IRQn
+ .text.delay    0x00000a68       0x28 ./inc/stepper_motors.o
+                0x00000a68                delay
  .text.SystemInit
-                0x00000a80       0xe4 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
-                0x00000a80                SystemInit
+                0x00000a90       0xe4 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+                0x00000a90                SystemInit
  .text.GPIO_SetDir
-                0x00000b64       0x24 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
-                0x00000b64                GPIO_SetDir
+                0x00000b74       0x24 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+                0x00000b74                GPIO_SetDir
  .text.GPIO_SetValue
-                0x00000b88       0x14 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
-                0x00000b88                GPIO_SetValue
+                0x00000b98       0x14 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+                0x00000b98                GPIO_SetValue
  .text.GPIO_ClearValue
-                0x00000b9c       0x14 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
-                0x00000b9c                GPIO_ClearValue
+                0x00000bac       0x14 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+                0x00000bac                GPIO_ClearValue
  .text.PINSEL_ConfigPin
-                0x00000bb0       0xa0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
-                0x00000bb0                PINSEL_ConfigPin
+                0x00000bc0       0xa0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+                0x00000bc0                PINSEL_ConfigPin
  .text.TIM_ClearIntPending
-                0x00000c50       0x4c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
-                0x00000c50                TIM_ClearIntPending
+                0x00000c60       0x4c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+                0x00000c60                TIM_ClearIntPending
  .text.TIM_Init
-                0x00000c9c      0x17c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
-                0x00000c9c                TIM_Init
- .text.TIM_Cmd  0x00000e18       0x48 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
-                0x00000e18                TIM_Cmd
+                0x00000cac      0x17c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+                0x00000cac                TIM_Init
+ .text.TIM_Cmd  0x00000e28       0x48 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+                0x00000e28                TIM_Cmd
  .text.TIM_ConfigMatch
-                0x00000e60       0xf4 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
-                0x00000e60                TIM_ConfigMatch
+                0x00000e70       0xf4 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+                0x00000e70                TIM_ConfigMatch
  .text.UART_Init
-                0x00000f54      0x28c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x00000f54                UART_Init
+                0x00000f64      0x28c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00000f64                UART_Init
  .text.UART_SendByte
-                0x000011e0       0x3c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x000011e0                UART_SendByte
+                0x000011f0       0x3c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x000011f0                UART_SendByte
  .text.UART_Send.part.0
-                0x0000121c       0x4a C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
- *fill*         0x00001266        0x2 ff
+                0x0000122c       0x4a C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+ *fill*         0x00001276        0x2 ff
  .text.UART_ReceiveByte
-                0x00001268       0x3c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x00001268                UART_ReceiveByte
+                0x00001278       0x3c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00001278                UART_ReceiveByte
  .text.UART_Send
-                0x000012a4       0x52 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x000012a4                UART_Send
+                0x000012b4       0x52 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x000012b4                UART_Send
  .text.UART_Receive
-                0x000012f6       0x50 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x000012f6                UART_Receive
- *fill*         0x00001346        0x2 ff
+                0x00001306       0x50 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00001306                UART_Receive
+ *fill*         0x00001356        0x2 ff
  .text.UART_IntConfig
-                0x00001348       0xc0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x00001348                UART_IntConfig
+                0x00001358       0xc0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00001358                UART_IntConfig
  .text.UART_GetIntId
-                0x00001408       0x40 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x00001408                UART_GetIntId
+                0x00001418       0x40 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00001418                UART_GetIntId
  .text.UART_FIFOConfig
-                0x00001448       0xb0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x00001448                UART_FIFOConfig
+                0x00001458       0xb0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00001458                UART_FIFOConfig
  .text.UART_FIFOConfigStructInit
-                0x000014f8        0xe C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x000014f8                UART_FIFOConfigStructInit
- *fill*         0x00001506        0x2 ff
+                0x00001508        0xe C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00001508                UART_FIFOConfigStructInit
+ *fill*         0x00001516        0x2 ff
  .text.UART_TxCmd
-                0x00001508       0x64 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x00001508                UART_TxCmd
+                0x00001518       0x64 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00001518                UART_TxCmd
  .text.CLKPWR_SetPCLKDiv
-                0x0000156c       0x50 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
-                0x0000156c                CLKPWR_SetPCLKDiv
+                0x0000157c       0x50 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+                0x0000157c                CLKPWR_SetPCLKDiv
  .text.CLKPWR_GetPCLKSEL
-                0x000015bc       0x20 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
-                0x000015bc                CLKPWR_GetPCLKSEL
+                0x000015cc       0x20 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+                0x000015cc                CLKPWR_GetPCLKSEL
  .text.CLKPWR_GetPCLK
-                0x000015dc       0x28 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
-                0x000015dc                CLKPWR_GetPCLK
+                0x000015ec       0x28 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+                0x000015ec                CLKPWR_GetPCLK
  .text.CLKPWR_ConfigPPWR
-                0x00001604       0x38 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
-                0x00001604                CLKPWR_ConfigPPWR
+                0x00001614       0x38 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+                0x00001614                CLKPWR_ConfigPPWR
  .text.check_failed
-                0x0000163c        0x2 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
-                0x0000163c                check_failed
+                0x0000164c        0x2 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+                0x0000164c                check_failed
  .text.__weak_main
-                0x0000163e        0x4 c:/nxp/lpcxpresso_8.2.2_650/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libcr_c.a(__weak__main.o)
-                0x0000163e                __weak_main
-                0x0000163e                __main
+                0x0000164e        0x4 c:/nxp/lpcxpresso_8.2.2_650/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libcr_c.a(__weak__main.o)
+                0x0000164e                __weak_main
+                0x0000164e                __main
  .text.__aeabi_division_uldivmod
-                0x00001642      0x174 c:/nxp/lpcxpresso_8.2.2_650/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m\libcr_eabihelpers.a(division_64.o)
-                0x00001642                __aeabi_uldivmod
-                0x00001646                __bhs_ldivmod1
+                0x00001652      0x174 c:/nxp/lpcxpresso_8.2.2_650/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m\libcr_eabihelpers.a(division_64.o)
+                0x00001652                __aeabi_uldivmod
+                0x00001656                __bhs_ldivmod1
  .text.__aeabi_division_idiv0
-                0x000017b6        0x2 c:/nxp/lpcxpresso_8.2.2_650/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m\libcr_eabihelpers.a(division_idiv0.o)
-                0x000017b6                __aeabi_idiv0
+                0x000017c6        0x2 c:/nxp/lpcxpresso_8.2.2_650/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m\libcr_eabihelpers.a(division_idiv0.o)
+                0x000017c6                __aeabi_idiv0
  *(.rodata .rodata.* .constdata .constdata.*)
  .rodata.CSWTCH.9
-                0x000017b8       0x14 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+                0x000017c8       0x14 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
  .rodata.str1.1
-                0x000017cc       0x1f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+                0x000017dc       0x1f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
  .rodata.CSWTCH.34
-                0x000017eb        0x3 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x000017fb        0x3 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
  .rodata.str1.1
-                0x000017ee       0x1e C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x000017fe       0x1e C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
  .rodata.CSWTCH.29
-                0x0000180c        0xe C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
-                0x0000181c                . = ALIGN (0x4)
- *fill*         0x0000181a        0x2 ff
+                0x0000181c        0xe C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x0000182c                . = ALIGN (0x4)
+ *fill*         0x0000182a        0x2 ff
 
-.glue_7         0x0000181c        0x0
- .glue_7        0x0000181c        0x0 linker stubs
+.glue_7         0x0000182c        0x0
+ .glue_7        0x0000182c        0x0 linker stubs
 
-.glue_7t        0x0000181c        0x0
- .glue_7t       0x0000181c        0x0 linker stubs
+.glue_7t        0x0000182c        0x0
+ .glue_7t       0x0000182c        0x0 linker stubs
 
-.vfp11_veneer   0x0000181c        0x0
- .vfp11_veneer  0x0000181c        0x0 linker stubs
+.vfp11_veneer   0x0000182c        0x0
+ .vfp11_veneer  0x0000182c        0x0 linker stubs
 
-.v4_bx          0x0000181c        0x0
- .v4_bx         0x0000181c        0x0 linker stubs
+.v4_bx          0x0000182c        0x0
+ .v4_bx         0x0000182c        0x0 linker stubs
 
-.iplt           0x0000181c        0x0
- .iplt          0x0000181c        0x0 ./src/RoboticArmUARTControl.o
+.iplt           0x0000182c        0x0
+ .iplt          0x0000182c        0x0 ./src/RoboticArmUARTControl.o
 
-.rel.dyn        0x0000181c        0x0
- .rel.iplt      0x0000181c        0x0 ./src/RoboticArmUARTControl.o
+.rel.dyn        0x0000182c        0x0
+ .rel.iplt      0x0000182c        0x0 ./src/RoboticArmUARTControl.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x0000181c                __exidx_start = .
+                0x0000182c                __exidx_start = .
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x0000181c                __exidx_end = .
-                0x0000181c                _etext = .
+                0x0000182c                __exidx_end = .
+                0x0000182c                _etext = .
 
-.data_RAM2      0x2007c000        0x0 load address 0x0000181c
+.data_RAM2      0x2007c000        0x0 load address 0x0000182c
  FILL mask 0xff
                 [!provide]                PROVIDE (__start_data_RAM2, .)
  *(.ramfunc.$RAM2)
@@ -708,7 +710,7 @@ END GROUP
                 0x10000000                . = ALIGN (0x4)
                 0x10000000                _end_uninit_RESERVED = .
 
-.data           0x10000000        0x4 load address 0x0000181c
+.data           0x10000000        0x4 load address 0x0000182c
  FILL mask 0xff
                 0x10000000                _data = .
  *(vtable)
@@ -720,7 +722,7 @@ END GROUP
                 0x10000004                . = ALIGN (0x4)
                 0x10000004                _edata = .
 
-.igot.plt       0x10000004        0x0 load address 0x00001820
+.igot.plt       0x10000004        0x0 load address 0x00001830
  .igot.plt      0x10000004        0x0 ./src/RoboticArmUARTControl.o
 
 .bss_RAM2       0x2007c000        0x0
@@ -733,7 +735,7 @@ END GROUP
 .bss            0x10000004       0x48
                 0x10000004                _bss = .
  *(.bss*)
- .bss.info.5537
+ .bss.info.5542
                 0x10000004        0x3 ./src/RoboticArmUARTControl.o
  *fill*         0x10000007        0x1 
  .bss.motors_list.5354
@@ -760,63 +762,63 @@ END GROUP
                 0xefff74b2                PROVIDE (__valid_user_code_checksum, (0x0 - ((((((_vStackTop + (ResetISR + 0x1)) + (NMI_Handler + 0x1)) + (HardFault_Handler + 0x1)) + (DEFINED (MemManage_Handler)?MemManage_Handler:0x0 + 0x1)) + (DEFINED (BusFault_Handler)?BusFault_Handler:0x0 + 0x1)) + (DEFINED (UsageFault_Handler)?UsageFault_Handler:0x0 + 0x1))))
 OUTPUT(RoboticArmUARTControl.axf elf32-littlearm)
 
-.debug_info     0x00000000     0x5aba
- .debug_info    0x00000000      0xa26 ./src/RoboticArmUARTControl.o
- .debug_info    0x00000a26      0x253 ./src/cr_startup_lpc175x_6x.o
- .debug_info    0x00000c79      0xa99 ./inc/stepper_motors.o
- .debug_info    0x00001712      0x318 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
- .debug_info    0x00001a2a      0xd6f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
- .debug_info    0x00002799      0x4e4 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
- .debug_info    0x00002c7d      0xb4c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
- .debug_info    0x000037c9     0x1bde C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
- .debug_info    0x000053a7      0x650 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
- .debug_info    0x000059f7       0xc3 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+.debug_info     0x00000000     0x5acb
+ .debug_info    0x00000000      0xa37 ./src/RoboticArmUARTControl.o
+ .debug_info    0x00000a37      0x253 ./src/cr_startup_lpc175x_6x.o
+ .debug_info    0x00000c8a      0xa99 ./inc/stepper_motors.o
+ .debug_info    0x00001723      0x318 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+ .debug_info    0x00001a3b      0xd6f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+ .debug_info    0x000027aa      0x4e4 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+ .debug_info    0x00002c8e      0xb4c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+ .debug_info    0x000037da     0x1bde C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+ .debug_info    0x000053b8      0x650 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+ .debug_info    0x00005a08       0xc3 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
 
-.debug_abbrev   0x00000000     0x1217
- .debug_abbrev  0x00000000      0x1f1 ./src/RoboticArmUARTControl.o
- .debug_abbrev  0x000001f1       0xf5 ./src/cr_startup_lpc175x_6x.o
- .debug_abbrev  0x000002e6      0x222 ./inc/stepper_motors.o
- .debug_abbrev  0x00000508       0xe6 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
- .debug_abbrev  0x000005ee      0x234 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
- .debug_abbrev  0x00000822      0x187 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
- .debug_abbrev  0x000009a9      0x2b0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
- .debug_abbrev  0x00000c59      0x36a C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
- .debug_abbrev  0x00000fc3      0x1e5 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
- .debug_abbrev  0x000011a8       0x6f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+.debug_abbrev   0x00000000     0x122f
+ .debug_abbrev  0x00000000      0x209 ./src/RoboticArmUARTControl.o
+ .debug_abbrev  0x00000209       0xf5 ./src/cr_startup_lpc175x_6x.o
+ .debug_abbrev  0x000002fe      0x222 ./inc/stepper_motors.o
+ .debug_abbrev  0x00000520       0xe6 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+ .debug_abbrev  0x00000606      0x234 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+ .debug_abbrev  0x0000083a      0x187 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+ .debug_abbrev  0x000009c1      0x2b0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+ .debug_abbrev  0x00000c71      0x36a C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+ .debug_abbrev  0x00000fdb      0x1e5 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+ .debug_abbrev  0x000011c0       0x6f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
 
-.debug_aranges  0x00000000      0x4c8
+.debug_aranges  0x00000000      0x4d0
  .debug_aranges
-                0x00000000       0x50 ./src/RoboticArmUARTControl.o
+                0x00000000       0x58 ./src/RoboticArmUARTControl.o
  .debug_aranges
-                0x00000050       0x80 ./src/cr_startup_lpc175x_6x.o
+                0x00000058       0x80 ./src/cr_startup_lpc175x_6x.o
  .debug_aranges
-                0x000000d0       0xc8 ./inc/stepper_motors.o
+                0x000000d8       0xc8 ./inc/stepper_motors.o
  .debug_aranges
-                0x00000198       0x28 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+                0x000001a0       0x28 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
  .debug_aranges
-                0x000001c0       0xe0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+                0x000001c8       0xe0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
  .debug_aranges
-                0x000002a0       0x30 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+                0x000002a8       0x30 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
  .debug_aranges
-                0x000002d0       0x80 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+                0x000002d8       0x80 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
  .debug_aranges
-                0x00000350      0x100 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+                0x00000358      0x100 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
  .debug_aranges
-                0x00000450       0x58 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+                0x00000458       0x58 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
  .debug_aranges
-                0x000004a8       0x20 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+                0x000004b0       0x20 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
 
-.debug_ranges   0x00000000      0x4d0
- .debug_ranges  0x00000000       0x40 ./src/RoboticArmUARTControl.o
- .debug_ranges  0x00000040       0x70 ./src/cr_startup_lpc175x_6x.o
- .debug_ranges  0x000000b0       0xb8 ./inc/stepper_motors.o
- .debug_ranges  0x00000168       0x18 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
- .debug_ranges  0x00000180       0xd0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
- .debug_ranges  0x00000250       0x70 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
- .debug_ranges  0x000002c0       0x70 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
- .debug_ranges  0x00000330      0x148 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
- .debug_ranges  0x00000478       0x48 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
- .debug_ranges  0x000004c0       0x10 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+.debug_ranges   0x00000000      0x4d8
+ .debug_ranges  0x00000000       0x48 ./src/RoboticArmUARTControl.o
+ .debug_ranges  0x00000048       0x70 ./src/cr_startup_lpc175x_6x.o
+ .debug_ranges  0x000000b8       0xb8 ./inc/stepper_motors.o
+ .debug_ranges  0x00000170       0x18 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+ .debug_ranges  0x00000188       0xd0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+ .debug_ranges  0x00000258       0x70 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+ .debug_ranges  0x000002c8       0x70 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+ .debug_ranges  0x00000338      0x148 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+ .debug_ranges  0x00000480       0x48 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+ .debug_ranges  0x000004c8       0x10 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
 
 .debug_macro    0x00000000     0x3a4e
  .debug_macro   0x00000000       0xc1 ./src/RoboticArmUARTControl.o
@@ -856,38 +858,38 @@ OUTPUT(RoboticArmUARTControl.axf elf32-littlearm)
  .debug_macro   0x0000391a       0x5d C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
  .debug_macro   0x00003977       0xd7 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
 
-.debug_line     0x00000000     0x22be
- .debug_line    0x00000000      0x3eb ./src/RoboticArmUARTControl.o
- .debug_line    0x000003eb       0xd5 ./src/cr_startup_lpc175x_6x.o
- .debug_line    0x000004c0      0x4e9 ./inc/stepper_motors.o
- .debug_line    0x000009a9      0x1d3 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
- .debug_line    0x00000b7c      0x40b C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
- .debug_line    0x00000f87      0x24d C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
- .debug_line    0x000011d4      0x4b9 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
- .debug_line    0x0000168d      0x7df C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
- .debug_line    0x00001e6c      0x2b5 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
- .debug_line    0x00002121      0x19d C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+.debug_line     0x00000000     0x22d3
+ .debug_line    0x00000000      0x400 ./src/RoboticArmUARTControl.o
+ .debug_line    0x00000400       0xd5 ./src/cr_startup_lpc175x_6x.o
+ .debug_line    0x000004d5      0x4e9 ./inc/stepper_motors.o
+ .debug_line    0x000009be      0x1d3 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+ .debug_line    0x00000b91      0x40b C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+ .debug_line    0x00000f9c      0x24d C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+ .debug_line    0x000011e9      0x4b9 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+ .debug_line    0x000016a2      0x7df C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+ .debug_line    0x00001e81      0x2b5 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+ .debug_line    0x00002136      0x19d C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
 
-.debug_str      0x00000000     0xe2b8
- .debug_str     0x00000000     0xb1a4 ./src/RoboticArmUARTControl.o
-                               0xb24b (size before relaxing)
- .debug_str     0x0000b1a4      0x1c2 ./src/cr_startup_lpc175x_6x.o
+.debug_str      0x00000000     0xe2c0
+ .debug_str     0x00000000     0xb1ac ./src/RoboticArmUARTControl.o
+                               0xb253 (size before relaxing)
+ .debug_str     0x0000b1ac      0x1c2 ./src/cr_startup_lpc175x_6x.o
                                0x26e2 (size before relaxing)
- .debug_str     0x0000b366      0x548 ./inc/stepper_motors.o
+ .debug_str     0x0000b36e      0x548 ./inc/stepper_motors.o
                                0x943f (size before relaxing)
- .debug_str     0x0000b8ae      0x51f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+ .debug_str     0x0000b8b6      0x51f C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
                                0x8151 (size before relaxing)
- .debug_str     0x0000bdcd      0x59b C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+ .debug_str     0x0000bdd5      0x59b C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
                                0x86bb (size before relaxing)
- .debug_str     0x0000c368      0x204 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+ .debug_str     0x0000c370      0x204 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
                                0x85d4 (size before relaxing)
- .debug_str     0x0000c56c     0x14e8 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+ .debug_str     0x0000c574     0x14e8 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
                                0xa370 (size before relaxing)
- .debug_str     0x0000da54      0x749 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+ .debug_str     0x0000da5c      0x749 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
                                0xb411 (size before relaxing)
- .debug_str     0x0000e19d       0xee C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+ .debug_str     0x0000e1a5       0xee C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
                                0x935c (size before relaxing)
- .debug_str     0x0000e28b       0x2d C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+ .debug_str     0x0000e293       0x2d C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
                                0x3f6b (size before relaxing)
 
 .comment        0x00000000       0xdc
@@ -934,17 +936,17 @@ OUTPUT(RoboticArmUARTControl.axf elf32-littlearm)
  .ARM.attributes
                 0x00000252       0x21 c:/nxp/lpcxpresso_8.2.2_650/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m\libcr_eabihelpers.a(division_idiv0.o)
 
-.debug_frame    0x00000000      0xd68
- .debug_frame   0x00000000      0x10c ./src/RoboticArmUARTControl.o
- .debug_frame   0x0000010c      0x170 ./src/cr_startup_lpc175x_6x.o
- .debug_frame   0x0000027c      0x340 ./inc/stepper_motors.o
- .debug_frame   0x000005bc       0x3c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
- .debug_frame   0x000005f8      0x1c0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
- .debug_frame   0x000007b8       0x4c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
- .debug_frame   0x00000804      0x170 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
- .debug_frame   0x00000974      0x32c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
- .debug_frame   0x00000ca0       0xa8 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
- .debug_frame   0x00000d48       0x20 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
+.debug_frame    0x00000000      0xd88
+ .debug_frame   0x00000000      0x12c ./src/RoboticArmUARTControl.o
+ .debug_frame   0x0000012c      0x170 ./src/cr_startup_lpc175x_6x.o
+ .debug_frame   0x0000029c      0x340 ./inc/stepper_motors.o
+ .debug_frame   0x000005dc       0x3c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(system_LPC17xx.o)
+ .debug_frame   0x00000618      0x1c0 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)
+ .debug_frame   0x000007d8       0x4c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_pinsel.o)
+ .debug_frame   0x00000824      0x170 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_timer.o)
+ .debug_frame   0x00000994      0x32c C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_uart.o)
+ .debug_frame   0x00000cc0       0xa8 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_clkpwr.o)
+ .debug_frame   0x00000d68       0x20 C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_libcfg_default.o)
 
 .debug_loc      0x00000000     0x23a7
  .debug_loc     0x00000000      0x76a C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug\libCMSISv2p00_LPC17xx.a(lpc17xx_gpio.o)

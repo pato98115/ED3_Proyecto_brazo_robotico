@@ -17,7 +17,7 @@
 void confUart(void);
 void confPin(void);
 void confPWM(void);
-#define STD_PERIOD 300
+#define STD_PERIOD 100
 
 int main(void) {
 	confPin();
