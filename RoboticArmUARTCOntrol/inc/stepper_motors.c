@@ -100,17 +100,24 @@ void micro_stepping_cfg(Motor *motor, uint8_t m1, uint8_t m2, uint8_t m3){//conf
 void stop_steps(Motor *motor){
 	clear_step_flag(motor->number);
 	GPIO_SetValue(motor->enable_portnum, (1<< motor->enable_pinnum));//levanta pin enable, activa el driver
+	motor->dir_value = DETENIDO;
 }
 
 /*
  * setea la direccion y levanta la bandera de pasos
  * para las interrupciones del timer
  */
-void start_steps(Motor *motor, uint8_t direction){
-	if(direction == ANTI_HORARIA)
+void start_steps(Motor *motor, DIR_Value direction){
+	if(direction == ANTI_HORARIA){
 		GPIO_SetValue(motor->dir_portnum, (1<< motor->dir_pinnum));
-	else if(direction == HORARIA)
-		GPIO_ClearValue(motor->dir_portnum, (1<< motor->dir_pinnum));
+		motor->dir_value = direction;
+	}
+	else{
+		if(direction == HORARIA){
+			GPIO_ClearValue(motor->dir_portnum, (1<< motor->dir_pinnum));
+			motor->dir_value = direction;
+		}
+	}
 	set_step_flag(motor->number); //abria que hacer parecido a la funcion motors
 	GPIO_ClearValue(motor->enable_portnum, (1<< motor->enable_pinnum)); //baja pin enable, activa el driver
 	return;

@@ -5,10 +5,15 @@
  *      Author: Pato & Nacho
  */
 
-#define ANTI_HORARIA		0 //direccion antihoraria
-#define HORARIA				1 //direccion antihoraria
+
 #define GET					0 //
 #define PUT					1 //
+
+typedef enum{
+	ANTI_HORARIA =-1, //direccion antihoraria
+	DETENIDO,		 //direccion antihoraria
+	HORARIA
+} DIR_Value;
 
 typedef struct{
 	uint8_t number;
@@ -22,6 +27,7 @@ typedef struct{
 	uint8_t m1_us_pinnum;
 	uint8_t m2_us_pinnum;
 	uint8_t m3_us_pinnum;
+	DIR_Value dir_value;
 	LPC_TIM_TypeDef *timer;
 }Motor;
 
@@ -32,7 +38,7 @@ void start_motor_timer(Motor *motor);//activa el timer asociado al motor de ese 
 void stop_motor_timer(Motor *motor);//desactiva timer asociado al motor de ese numero
 void stop_steps(Motor *motor);//desactiva los steps del motor
 void micro_stepping_cfg(Motor *motor, uint8_t m1, uint8_t m2, uint8_t m3);//configura el microstepping
-void start_steps(Motor *motor, uint8_t direction);//activa interrupciones y levanta bandera
+void start_steps(Motor *motor, DIR_Value direction);//activa interrupciones y levanta bandera
 void do_step(Motor* motor);//realiza un step
 void ch_velocity(LPC_TIM_TypeDef *TIMx, uint32_t new_period);//modifica match
 Motor get_motor(uint8_t motor_number); //devuelve el motor de la lista con dicho nro

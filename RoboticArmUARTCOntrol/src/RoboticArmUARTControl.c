@@ -16,6 +16,10 @@
 #include "servo_motors.h"
 #include "lpc17xx_systick.h"
 
+#define CANTIDAD_STEPPERS 2
+#define TIMER_GRABACION LPC_TIM1
+#define TIMER_GRABACION_HANDLER TIMER1_IRQHandler
+
 typedef enum{
 	AGARRAR =0,
 	SOLTAR
@@ -23,9 +27,21 @@ typedef enum{
 
 typedef enum{
 	GRABACION =0,
-	REPETICION,
+	EJECUCION,
 	MANUAL
-}  Estados;
+}  Estado;
+
+typedef enum{
+	GUARDAR,
+	INICIAR,
+	TERMINAR,
+	REPETIR
+} RegStampCmd;
+
+typedef enum{
+	ACTIVADA,
+	DESACTIVADA
+} BanderaDeEjecucion;
 
 typedef enum{
 	AGARRAROSOLTAR =48,
@@ -43,28 +59,166 @@ typedef enum{
 	M3DETENER,
 	GRABARMOVIMIENTO,
 	DETENERYEJECUTAR,
+	MODOMANUAL
 } UART_Cmd;
+
+typedef struct{
+	uint32_t tiempo;
+	UART_Cmd comando;
+} Reg_Stamp;
+
 
 void confUart(void);
 void confSteppers(void);
 void confServo(Servo_Motor *);
+Status inicializarTimerDeGrabacion(LPC_TIM_TypeDef *);
+void cmdMatch0InterruptTimGrabacion(FunctionalState interupt);
+uint32_t leerYResetearTimer(LPC_TIM_TypeDef *);
+Estado states(Estado,uint8_t );
+Estado getEstado(void);
+void setEstado(Estado estado);
+BanderaDeEjecucion banderaEnEstadoEjecucion(BanderaDeEjecucion,uint32_t put_get);
+BanderaDeEjecucion getBanderaEnEstadoEjecucion(void);
+void setBanderaEnEstadoEjecucion(BanderaDeEjecucion);
 void garraCmd(Servo_Motor * , Garra_Cmd);
+void ejecutarUARTCmd(UART_Cmd comando);
+void detenerMovimientos(void);
+uint8_t posicion(uint8_t numeroDeMotor,uint8_t put_get,DIR_Value direccion);
+void getPosSteppers(uint32_t *);
+Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t cuentaTimer);
 
 
-#define STD_PERIOD 300
+
+#define STD_PERIOD 100
 
 
 int main(void) {
-	confUart();
 	confSteppers();
 	Servo_Motor servo_motor;
 	confServo(&servo_motor);
 	SysTick_Config(SystemCoreClock/30);
 	SYSTICK_IntCmd(DISABLE);
-	while(1){
+	setEstado(MANUAL);
+	confUart();
+	if(inicializarTimerDeGrabacion(TIMER_GRABACION)) // inicializamos el timer que lleva la cuenta cuando se esta en modo grabacion
+			while(1){}                           //se produjo un error ya que el timer ya esta en uso( algun motor lo usa por ejemplo)
+	Estado estadoActual =MANUAL;
+	Estado estadoAnterior = MANUAL;
+	uint32_t posicionInicial[4];
+	uint32_t posicionFinal[4];
+	Reg_Stamp registroTemporal;
+	while(1)
+	{
+		while(estadoActual == estadoAnterior){  //Busca la transiciones de estados , mientras el estado actual sea igual al anterior se mantiene en este ciclo
+			if(estadoActual == EJECUCION && getBanderaEnEstadoEjecucion()==ACTIVADA){ // Si estamos en el estado de ejecucion y se levanto la bandera,
+				TIM_Cmd(TIMER_GRABACION,DISABLE);  						// debemos ejecutar el comando determinado por el registro de comandos,pero primero
+				ejecutarUARTCmd(registroTemporal.comando);				// apagamos el conteo del timer para que no haya una corrupcion cuando escribamos el match(puede que no sea necesario)
+				registroTemporal = regStampUpdate(0,REPETIR,0); 		// una vez que ejecutamos el comando, extraemos el siguiente registro de comandos, y verificamos
+				while(registroTemporal.tiempo == TIMER_GRABACION->MR0){	// que los eventos no hayan sido grabados al mismo tiempo (esto sucede cuando llega al final de la grabacion)
+					ejecutarUARTCmd(registroTemporal.comando);			// si sucedieron al mismo tiempo, se ejecutan al mismo tiempo.
+					registroTemporal = regStampUpdate(0,REPETIR,0);		//
+				}														//
+				TIM_UpdateMatchValue(TIMER_GRABACION,0,registroTemporal.tiempo);//Luego se actualiza el valor del match con el nuevo registro de comandos
+				TIM_Cmd(TIMER_GRABACION,ENABLE);						// habilitamos el timer nuevamente y bajamos la bandera de ejecutar el comando para que se levante
+				setBanderaEnEstadoEjecucion(DESACTIVADA);				// cuando interrumpa el timer con el match que seteamos
+			}
+			estadoActual = getEstado();
+		}
+		if(estadoAnterior == MANUAL || (estadoAnterior == EJECUCION && estadoActual == GRABACION)){
+											//detectamos si hay una transicion de estado MANUAL a GRABACION o EJECUCION a GRABACION
+			regStampUpdate(0,INICIAR,0);
+			leerYResetearTimer(TIMER_GRABACION);  		//reseteamos el timer de grabacion y deshabilitamos las interrupciones y el reseteo por MR0
+			cmdMatch0InterruptTimGrabacion(DISABLE);	// en caso de que hubiese estado habilitado
+			static uint32_t posicionInicial[4];			// Obtenemos la posicion inicial
+			getPosSteppers(posicionInicial);
+			estadoAnterior = GRABACION;
+		}
+		if(estadoAnterior == GRABACION && estadoActual == EJECUCION){ // transicion de estado de grabacion a ejecucion
+			detenerMovimientos();
+			uint32_t timerDetencion;							//detenemos todos los movimientos, y sensamos el tiempo. luego dependiendo del valor de la posicion final
+			timerDetencion = leerYResetearTimer(TIMER_GRABACION);// tenemos que determinar que comando de debe realizar en este tiempo para volver a la posicion inicial relativa
+			getPosSteppers(posicionFinal);
+			uint8_t motorsFDR = 0;     //esta variable almacen la cantidad de motoes que estan fuera de referencia, es decir que su posicion final no es la inicial
+			Motor motorAuxiliar;
+			for(uint8_t i = 0; i<CANTIDAD_STEPPERS;i++){	//este ciclo for nos va guardando en regStamp el comando a realizar para volver cada motor a la posicion inicial
+				UART_Cmd comandoDeRetorno;
+				if(posicionFinal[i]-posicionInicial[i]==0)// si la posicion inicial es igual a la final, el motor debe permanecer detenido
+					comandoDeRetorno = 48+(i+1)*3;  // La operacion matematica es para obtener el comando uart que sea de detencion para cada motor(esto depende del orden del enumerado UART_Cmd)
+				else{
+					if(posicionFinal[i]-posicionInicial[i]>0)
+						comandoDeRetorno = 48+(i+1)*3-1; //si la posicion final es mayor que la inicial, debemos girar antihorario, por eso restamos uno al comando uart
+					else
+						comandoDeRetorno = 48+(i+1)*3-2;//si la posicion final es menor que la inicial, giramos horario
+					motorsFDR++;
 
+				}
+				regStampUpdate((UART_Cmd)comandoDeRetorno,GUARDAR,timerDetencion); // agrega el comando de retorno al regStamp y lo ejecuta
+				ejecutarUARTCmd(comandoDeRetorno);
+			}
+			while(motorsFDR!=0){ //ejecutamos este ciclo hasta que todos los motores esten en la posicion inicial
+				static uint8_t i = 0;
+				posicionFinal[i] =posicion(i,GET,0);
+				if(posicionFinal[i]-posicionInicial[i]==0){
+					//detenerMovimientos();  // esta linea no se si es necesaria, pero puede llegar a serlo en caso de que sea muy impreciso el pooling que detecta si el motor
+											//llego a la posicion inicial o no
+					motorAuxiliar = get_motor(i);
+					stop_steps(&motorAuxiliar); // si el motor llego a la posicion inicial, detiene su movimiento
+					timerDetencion = leerYResetearTimer(TIMER_GRABACION);
+					regStampUpdate((UART_Cmd)48+(i+1)*3,GUARDAR,timerDetencion); // guarda el registro de cuando este motor debe detenerse, estado en el cual inicia la secuencia
+					motorsFDR--;												// de grabacion
+				}
+				i++;
+				i%=CANTIDAD_STEPPERS;
+			}
+			regStampUpdate(0,TERMINAR,0);									// este registro determina dentro de la funcion regStampUpdate la variable estatica que sera
+			registroTemporal = regStampUpdate(0,REPETIR,0);					//la cantidad de comandos guardados. Cuando enviamos el comando REPETIR, lo que hace es retornarnos
+			TIM_UpdateMatchValue(TIMER_GRABACION,0,registroTemporal.tiempo);	//el actual registro y incrementar uno en el indice, de manera que siempre obtengamos el sigiente
+			cmdMatch0InterruptTimGrabacion(ENABLE);							//por cada llamado. Aqui se habilita el timer y
+			setBanderaEnEstadoEjecucion(DESACTIVADA);						//
+			estadoAnterior = EJECUCION;										//
+		}
+		if(estadoAnterior == EJECUCION && estadoActual == MANUAL){
+			setBanderaEnEstadoEjecucion(DESACTIVADA);
+			cmdMatch0InterruptTimGrabacion(DISABLE);
+
+		}
 	}
 	return 0 ;
+}
+
+
+void confUart(void){
+	PINSEL_CFG_Type PinCfg;
+	//configuración pin de Tx y Rx
+	PinCfg.Funcnum = 1;
+	PinCfg.OpenDrain = 0;
+	PinCfg.Pinmode = 0;
+	PinCfg.Pinnum = 2;
+	PinCfg.Portnum = 0;
+	PINSEL_ConfigPin(&PinCfg);
+	PinCfg.Pinnum = 3;
+	PINSEL_ConfigPin(&PinCfg);
+
+	UART_CFG_Type UARTConfigStruct;
+	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
+	//configuración por defecto:
+	UARTConfigStruct.Baud_rate = 9600;
+	UARTConfigStruct.Databits = UART_DATABIT_8;
+	UARTConfigStruct.Parity = UART_PARITY_NONE;
+	UARTConfigStruct.Stopbits = UART_STOPBIT_1;
+	UART_Init((LPC_UART_TypeDef *)LPC_UART0, &UARTConfigStruct);
+
+	UART_FIFOConfigStructInit(&UARTFIFOConfigStruct);//Inicializa FIFO
+	UART_FIFOConfig((LPC_UART_TypeDef *)LPC_UART0, &UARTFIFOConfigStruct);
+
+	// Habilita transmisión
+	UART_TxCmd((LPC_UART_TypeDef *)LPC_UART0, ENABLE);
+	UART_IntConfig((LPC_UART_TypeDef *)LPC_UART0,UART_INTCFG_THRE,ENABLE);
+
+	UART_IntConfig((LPC_UART_TypeDef *)LPC_UART0,UART_INTCFG_RBR,ENABLE);
+	UART_IntConfig((LPC_UART_TypeDef *)LPC_UART0,UART_INTCFG_RLS,ENABLE);
+	NVIC_EnableIRQ(UART0_IRQn);
+	return;
 }
 
 void confSteppers(void){
@@ -80,6 +234,7 @@ void confSteppers(void){
 	motor_0.m3_us_pinnum = 5;
 	motor_0.timer = LPC_TIM0;
 	motor_0.enable_portnum = 0;
+	motor_0.dir_value = DETENIDO;
 	motor_0.enable_pinnum = 11;
 
 
@@ -95,6 +250,7 @@ void confSteppers(void){
 	motor_1.m3_us_pinnum = 11;
 	motor_1.enable_portnum = 2;
 	motor_1.enable_pinnum = 12;
+	motor_1.dir_value = DETENIDO;
 	motor_1.timer = LPC_TIM0;
 
 	motor_config(&motor_0);
@@ -120,6 +276,96 @@ void confServo(Servo_Motor* servo_motor){
 	return;
 }
 
+Status inicializarTimerDeGrabacion(LPC_TIM_TypeDef *timerGrabacion){
+	for(uint8_t i =0 ; i<CANTIDAD_STEPPERS; i++){
+		Motor stepper = get_motor(i);
+		if(stepper.timer == timerGrabacion)
+			return ERROR;
+	}
+	TIM_TIMERCFG_Type timerCfg;
+	timerCfg.PrescaleOption = TIM_PRESCALE_USVAL;
+	timerCfg.PrescaleValue = 100; // que se el prescaler sea de 10 us de manera de que podamos contar un tiempo bastante largo
+	TIM_Init(timerGrabacion,TIM_TIMER_MODE,&timerCfg);
+	TIM_Cmd(timerGrabacion,ENABLE);
+	static TIM_MATCHCFG_Type matchCfg;
+	matchCfg.MatchChannel =0;
+	matchCfg.ExtMatchOutputType = TIM_EXTMATCH_NOTHING;
+	matchCfg.StopOnMatch = DISABLE;
+	matchCfg.MatchValue = 1;
+	matchCfg.IntOnMatch = DISABLE;
+	matchCfg.ResetOnMatch = DISABLE;
+	TIM_ConfigMatch(timerGrabacion,&matchCfg);
+	return SUCCESS;
+}
+
+void cmdMatch0InterruptTimGrabacion(FunctionalState interrupt){
+	if(interrupt ==ENABLE)
+		TIMER_GRABACION->MCR |=3;
+	else{
+		if(interrupt == DISABLE)
+			TIMER_GRABACION->MCR &= (~3);
+	}
+	return;
+}
+
+uint32_t leerYResetearTimer(LPC_TIM_TypeDef* timer ){
+	uint32_t cuenta;
+	cuenta = timer->TC;
+	TIM_ResetCounter(timer);
+	return cuenta;
+}
+
+Estado states(Estado estado,uint8_t put_get){
+	static Estado estado_actual;
+	if(put_get == PUT){
+		estado_actual = estado;
+		return estado;
+	}
+	if(put_get == GET){
+		return estado_actual;
+	}
+	else{
+		while(1){};
+		return estado_actual;
+	}
+}
+
+Estado getEstado(void){
+	return states(0,GET);
+}
+
+void setEstado(Estado estado){
+	states(estado,PUT);
+	return;
+}
+
+
+BanderaDeEjecucion banderaEnEstadoEjecucion(BanderaDeEjecucion nuevaBandera,uint32_t put_get){
+	static BanderaDeEjecucion bandera = DESACTIVADA;
+	switch(put_get){
+	case PUT:
+		bandera = nuevaBandera;
+		return nuevaBandera;
+		break;
+	case GET:
+		return bandera;
+		break;
+	default:
+		while(1){}
+		return nuevaBandera;
+	}
+}
+
+BanderaDeEjecucion getBanderaEnEstadoEjecucion(void){
+	return banderaEnEstadoEjecucion(0,GET);
+}
+
+void setBanderaEnEstadoEjecucion(BanderaDeEjecucion nuevaBandera){
+	banderaEnEstadoEjecucion(nuevaBandera,PUT);
+	return;
+}
+
+
 void garraCmd(Servo_Motor* servo_motor,Garra_Cmd comando){
 	uint8_t duty,cerrado,abierto;
 	duty = servo_motor->duty_cycle;
@@ -141,6 +387,142 @@ void garraCmd(Servo_Motor* servo_motor,Garra_Cmd comando){
 	}
 	return;
 }
+
+
+
+
+void ejecutarUARTCmd(UART_Cmd comando){
+	Motor motor0 = get_motor(0);
+	Motor motor1 = get_motor(1);
+	Servo_Motor *servo_motor;
+	switch(comando){
+	case AGARRAROSOLTAR:
+		servo_motor = get_servo_motor(1);
+		if(((servo_motor->estado) == CERRADO )||((servo_motor->estado) == CERRANDO ))
+			garraCmd(servo_motor,SOLTAR);
+		else
+			garraCmd(servo_motor,AGARRAR);
+		break;
+	case M0HORARIO :
+		start_steps(&(motor0),HORARIA);
+		break;
+	case M0ANTIHORARIO:
+		start_steps(&motor0,ANTI_HORARIA);
+		break;
+	case M0DETENER :
+		stop_steps(&motor0);
+		break;
+	case M1HORARIO :
+		start_steps(&motor1,HORARIA);
+		break;
+	case M1ANTIHORARIO:
+		start_steps(&motor1,ANTI_HORARIA);
+		break;
+	case M1DETENER :
+		stop_steps(&motor1);
+		break;
+	case GRABARMOVIMIENTO:
+		setEstado(GRABACION);
+		break;
+	case DETENERYEJECUTAR:
+		setEstado(EJECUCION);
+		break;
+	case MODOMANUAL:
+		setEstado(MANUAL);
+		break;
+	default:
+		break;
+	}
+	return;
+}
+
+void detenerMovimientos(void){
+	for(uint8_t i = 0;i<CANTIDAD_STEPPERS;i++){
+		Motor aux = get_motor(i);
+		stop_steps(&aux);
+	}
+	return;
+}
+
+uint8_t posicion(uint8_t numeroDeMotor,uint8_t put_get,DIR_Value direccion){
+	static uint32_t posicionMotores[4] ={0,0,0,0};
+	switch(put_get){
+	case PUT:
+		posicionMotores[numeroDeMotor]+= direccion;
+		return numeroDeMotor;
+		break;
+	case GET:
+		return posicionMotores[numeroDeMotor];
+		break;
+	default:
+		while(1){}
+		return numeroDeMotor;
+		break;
+	}
+}
+
+
+void getPosSteppers(uint32_t *posicionARetornar){
+	for(uint8_t i = 0;i<CANTIDAD_STEPPERS;i++ ){
+		posicionARetornar[i] = posicion(i,GET,0);
+	}
+}
+
+Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t cuentaTimer ){
+	static uint32_t numeroDeRegistro = 0;
+	static uint32_t cantidadDeComandosGuardados;
+	static Reg_Stamp regStamp[1000];
+	switch(comandoStamp){
+	case INICIAR:
+		detenerMovimientos();
+		numeroDeRegistro = 0;
+		break;
+	case GUARDAR:
+		;
+		Reg_Stamp registro_auxiliar;
+		registro_auxiliar.comando = comandoUart;
+		registro_auxiliar.tiempo = cuentaTimer;
+		regStamp[numeroDeRegistro] = registro_auxiliar;
+		TIM_ResetCounter(TIMER_GRABACION);
+		numeroDeRegistro++;
+		break;
+	case TERMINAR:
+		cantidadDeComandosGuardados = numeroDeRegistro+1;
+		numeroDeRegistro = 0;
+		break;
+	case REPETIR: // retorna el actual registro guardado e incrementa el contador
+		;
+		uint32_t auxiliar = numeroDeRegistro;
+		numeroDeRegistro++;
+		numeroDeRegistro%=cantidadDeComandosGuardados;
+		return regStamp[auxiliar];
+	}
+	return regStamp[0];
+}
+
+//Handlers
+
+void TIMER0_IRQHandler(void){
+	TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
+	for(uint8_t i = 0; i < 4; i++){
+		if(get_motor_flag(i) == 1){
+			Motor motor = get_motor(i);
+			do_step(&motor);
+			posicion(i,PUT,motor.dir_value);
+		}
+	}
+	return;
+}
+
+void TIMER_GRABACION_HANDLER(void){
+	if(TIM_GetIntStatus(TIMER_GRABACION,TIM_MR0_INT)){
+		TIM_ClearIntPending(LPC_TIM1, TIM_MR0_INT);
+		setBanderaEnEstadoEjecucion(ACTIVADA);
+	}
+	return;
+}
+
+
 
 void SysTick_Handler(void){
 	Servo_Motor* servo_motor = get_servo_motor(1);
@@ -164,106 +546,49 @@ void SysTick_Handler(void){
 	return;
 }
 
-void TIMER0_IRQHandler(void){
-	TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
-	for(uint8_t i = 0; i < 4; i++){
-		if(get_motor_flag(i) == 1){
-			Motor motor = get_motor(i);
-			do_step(&motor);
-		}
-	}
-	return;
-}
-
-//void TIMER1_IRQHandler(void){
-//	TIM_ClearIntPending(LPC_TIM1, TIM_MR0_INT);
-//	for(uint8_t i = 0; i < 4; i++){
-//		if(get_motor_flag(i) == 1){
-//			Motor motor = get_motor(i);
-//			do_step(&motor);
-//		}
-//	}
-//	return;
-//}
-
-
-
-void confUart(void){
-	PINSEL_CFG_Type PinCfg;
-	//configuración pin de Tx y Rx
-	PinCfg.Funcnum = 1;
-	PinCfg.OpenDrain = 0;
-	PinCfg.Pinmode = 0;
-	PinCfg.Pinnum = 2;
-	PinCfg.Portnum = 0;
-	PINSEL_ConfigPin(&PinCfg);
-	PinCfg.Pinnum = 3;
-	PINSEL_ConfigPin(&PinCfg);
-
-	UART_CFG_Type UARTConfigStruct;
-	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
-	//configuración por defecto:
-	UARTConfigStruct.Baud_rate = 9600;
-	UARTConfigStruct.Databits = UART_DATABIT_8;
-	UARTConfigStruct.Parity = UART_PARITY_NONE;
-	UARTConfigStruct.Stopbits = UART_STOPBIT_1;
-	UART_Init(LPC_UART0, &UARTConfigStruct);
-
-	UART_FIFOConfigStructInit(&UARTFIFOConfigStruct);//Inicializa FIFO
-	UART_FIFOConfig(LPC_UART0, &UARTFIFOConfigStruct);
-
-	// Habilita transmisión
-	UART_TxCmd(LPC_UART0, ENABLE);
-	UART_IntConfig(LPC_UART0,UART_INTCFG_THRE,ENABLE);
-
-	UART_IntConfig(LPC_UART0,UART_INTCFG_RBR,ENABLE);
-	UART_IntConfig(LPC_UART0,UART_INTCFG_RLS,ENABLE);
-	NVIC_EnableIRQ(UART0_IRQn);
-	return;
-}
-
-
-
 void UART0_IRQHandler(void){
 	uint32_t intscr,tmp;
 	static uint8_t info[3];
-	intscr = UART_GetIntId(LPC_UART0);
+	intscr = UART_GetIntId((LPC_UART_TypeDef *)LPC_UART0);
 	tmp = intscr & UART_IIR_INTID_MASK;
 	if(tmp == UART_IIR_INTID_RDA|| tmp == UART_IIR_INTID_CTI){
-		UART_Receive(LPC_UART0,info,sizeof(info),NONE_BLOCKING);
+		UART_Receive((LPC_UART_TypeDef *)LPC_UART0,info,sizeof(info),NONE_BLOCKING);
 		*(info+1) = (uint8_t)'\r';
 		*(info+2) = (uint8_t)'\n';
-		UART_Send(LPC_UART0,info,sizeof(info),NONE_BLOCKING);
-		Motor motor0 = get_motor(0);
-		Motor motor1 = get_motor(1);
-		Servo_Motor *servo_motor;
-		switch(info[0]){
-		case AGARRAROSOLTAR:
-			servo_motor = get_servo_motor(1);
-			if(((servo_motor->estado) == CERRADO )||((servo_motor->estado) == CERRANDO ))
-				garraCmd(servo_motor,SOLTAR);
-			else
-				garraCmd(servo_motor,AGARRAR);
+		UART_Send((LPC_UART_TypeDef *)LPC_UART0,info,sizeof(info),NONE_BLOCKING);
+		Estado estadoActual;
+		estadoActual = getEstado();
+		switch(estadoActual){
+		case MANUAL:
+			if(info[0]!= DETENERYEJECUTAR)
+				ejecutarUARTCmd(info[0]);
+			else{
+				uint8_t errormsg[] = "No se puede ejecutar este comando bajo modo manual\n\r";
+				UART_Send((LPC_UART_TypeDef *)LPC_UART0,errormsg,sizeof(errormsg),NONE_BLOCKING);
+			}
 			break;
-		case M0HORARIO :
-			start_steps(&(motor0),HORARIA);
-			break;
-		case M0ANTIHORARIO:
-			start_steps(&motor0,ANTI_HORARIA);
-			break;
-		case M0DETENER :
-			stop_steps(&motor0);
-			break;
-		case M1HORARIO :
-			start_steps(&motor1,HORARIA);
-			break;
-		case M1ANTIHORARIO:
-			start_steps(&motor1,ANTI_HORARIA);
-			break;
-		case M1DETENER :
-			stop_steps(&motor1);
+		case GRABACION:
+			ejecutarUARTCmd(info[0]);
+			if(info[0]!=GRABARMOVIMIENTO && info[0]!=DETENERYEJECUTAR && info[0]!= MODOMANUAL)
+				regStampUpdate(info[0],GUARDAR,TIMER_GRABACION->TC);  // solo se guarda el movimiento en caso de que no se afecten a los estados,
+			break; 								//	es decir que los movimientos guardados afectan solo a los motores
+		case EJECUCION:
+			if(info[0]==MODOMANUAL || info[0] == GRABARMOVIMIENTO){
+				ejecutarUARTCmd(info[0]);
+			}
 			break;
 		}
 	}
 	return;
 }
+
+
+
+
+
+
+
+
+
+
+
