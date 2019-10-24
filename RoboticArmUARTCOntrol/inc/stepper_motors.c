@@ -133,7 +133,7 @@ void ch_velocity(LPC_TIM_TypeDef *TIMx, uint32_t new_period){
  * Devuelve el Motor de la lista que se corresponde
  * su numero con el parametro motor_number
  */
-Motor get_motor(uint8_t motor_number){
+Motor *get_motor(uint8_t motor_number){
 	Motor m_aux;
 	m_aux.number = motor_number;
 	return motors(&m_aux, GET);
@@ -154,18 +154,18 @@ void put_motor(Motor *motor){
  * si put_get == PUT (1) agrega el parametro motor a la lista
  * 						 en la posicion [number] y lo devuelve
  */
-Motor motors(Motor *motor, uint8_t put_get){
+Motor *motors(Motor *motor, uint8_t put_get){
 	static Motor motors_list[4];
 	if(put_get == PUT){ //agregar un motor
 		motors_list[motor->number] = *motor;
-		return *motor;
+		return motor;
 	}
 	else if(put_get == GET){//devolver un motor
-		return motors_list[motor->number];
+		return (Motor *)&motors_list[motor->number];
 	}
 	else{
 		while(1){}
-		return motors_list[0];
+		return (Motor *)&motors_list[0];
 	}
 }
 /*

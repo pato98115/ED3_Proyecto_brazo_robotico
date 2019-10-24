@@ -41,9 +41,9 @@ void micro_stepping_cfg(Motor *motor, uint8_t m1, uint8_t m2, uint8_t m3);//conf
 void start_steps(Motor *motor, DIR_Value direction);//activa interrupciones y levanta bandera
 void do_step(Motor* motor);//realiza un step
 void ch_velocity(LPC_TIM_TypeDef *TIMx, uint32_t new_period);//modifica match
-Motor get_motor(uint8_t motor_number); //devuelve el motor de la lista con dicho nro
+Motor *get_motor(uint8_t motor_number); //devuelve el motor de la lista con dicho nro
 void put_motor(Motor *motor); //agrega un motor a la lista
-Motor motors(Motor *motor, uint8_t put_get);// agrega un montor a la lista o devuelve un motor
+Motor *motors(Motor *motor, uint8_t put_get);// agrega un montor a la lista o devuelve un motor
 void set_step_flag(uint8_t motor_number); //levanta bandera de step
 void clear_step_flag(uint8_t motor_number); //baja bandera de step
 uint8_t get_motor_flag(uint8_t motor_number); //devuelve valor de bandera de step
