@@ -16,7 +16,7 @@
 #include "servo_motors.h"
 #include "lpc17xx_systick.h"
 
-#define CANTIDAD_STEPPERS 2
+#define CANTIDAD_STEPPERS 3
 #define TIMER_GRABACION LPC_TIM1
 #define TIMER_GRABACION_HANDLER TIMER1_IRQHandler
 
@@ -89,7 +89,7 @@ Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t 
 
 
 
-#define STD_PERIOD 70
+#define STD_PERIOD 150
 
 
 int main(void) {
@@ -198,11 +198,11 @@ int main(void) {
 			setBanderaEnEstadoEjecucion(DESACTIVADA);						//por cada llamado. Aqui se habilita el timer y
 			estadoAnterior = EJECUCION;										//
 		}
-		if(estadoAnterior == EJECUCION && estadoActual == MANUAL){
+		if((estadoAnterior == EJECUCION||estadoAnterior ==GRABACION) && estadoActual == MANUAL){
 			setBanderaEnEstadoEjecucion(DESACTIVADA);
 			cmdMatch0InterruptTimGrabacion(DISABLE);
 			estadoAnterior = MANUAL;
-
+			detenerMovimientos();
 		}
 	}
 	return 0 ;
@@ -275,11 +275,28 @@ void confSteppers(void){
 	motor_1.dir_value = DETENIDO;
 	motor_1.timer = LPC_TIM0;
 
+	Motor motor_2;
+	motor_2.number = 2;
+	motor_2.dir_portnum = 0;
+	motor_2.step_portnum = 0;
+	motor_2.dir_pinnum = 1;
+	motor_2.step_pinnum = 0;
+	motor_2.m_us_portnum = 0;
+	motor_2.m1_us_pinnum = 8;
+	motor_2.m2_us_pinnum = 7;
+	motor_2.m3_us_pinnum = 6;
+	motor_2.timer = LPC_TIM0;
+	motor_2.enable_portnum = 0;
+	motor_2.dir_value = DETENIDO;
+	motor_2.enable_pinnum = 18;
+
 	motor_config(&motor_0);
 	motor_config(&motor_1);
+	motor_config(&motor_2);
 	motor_timer_init(&motor_0, STD_PERIOD);
 	micro_stepping_cfg(&motor_0, 1, 1, 1);
 	micro_stepping_cfg(&motor_1, 1, 1, 1);
+	micro_stepping_cfg(&motor_2, 1, 1, 1);
 	start_motor_timer(&motor_0);
 	return;
 }
@@ -416,6 +433,7 @@ void garraCmd(Servo_Motor* servo_motor,Garra_Cmd comando){
 void ejecutarUARTCmd(UART_Cmd comando){
 	Motor *motor0 = get_motor(0);
 	Motor *motor1 = get_motor(1);
+	Motor *motor2 = get_motor(2);
 	Servo_Motor *servo_motor;
 	switch(comando){
 	case AGARRAROSOLTAR:
@@ -442,6 +460,15 @@ void ejecutarUARTCmd(UART_Cmd comando){
 		break;
 	case M1DETENER :
 		stop_steps(motor1);
+		break;
+	case M2HORARIO:
+		start_steps(motor2,HORARIA);
+		break;
+	case M2ANTIHORARIO:
+		start_steps(motor2,ANTI_HORARIA);
+		break;
+	case M2DETENER:
+		stop_steps(motor2);
 		break;
 	case GRABARMOVIMIENTO:
 		setEstado(GRABACION);
@@ -519,7 +546,9 @@ Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t 
 		numeroDeRegistro++;
 		numeroDeRegistro%=cantidadDeComandosGuardados;
 		return regStamp[auxiliar];
+		break;
 	}
+	return regStamp[0];
 }
 
 //Handlers
