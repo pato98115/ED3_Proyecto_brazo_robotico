@@ -216,7 +216,9 @@ int main(void) {
 
 void limpiar_perifericos(void){
 	LPC_TIM0->MCR = 0;
+	LPC_TIM0->CCR = 0;
 	LPC_TIM1->MCR = 0;
+	LPC_TIM1->CCR = 0;
 	return;
 }
 
