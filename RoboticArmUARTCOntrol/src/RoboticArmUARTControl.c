@@ -16,7 +16,7 @@
 #include "servo_motors.h"
 #include "lpc17xx_systick.h"
 
-#define CANTIDAD_STEPPERS 3
+#define CANTIDAD_STEPPERS 4
 #define TIMER_GRABACION LPC_TIM1
 #define TIMER_GRABACION_HANDLER TIMER1_IRQHandler
 
@@ -44,22 +44,23 @@ typedef enum{
 } BanderaDeEjecucion;
 
 typedef enum{
-	AGARRAROSOLTAR =48,
+	cmd_null =96,
+	M0DETENER,
 	M0HORARIO,
 	M0ANTIHORARIO,
-	M0DETENER,
+	M1DETENER,
 	M1HORARIO,
 	M1ANTIHORARIO,
-	M1DETENER,
+	M2DETENER,
 	M2HORARIO,
 	M2ANTIHORARIO,
-	M2DETENER,
-	M3HORARIO=97,
-	M3ANTIHORARIO,
 	M3DETENER,
+	M3HORARIO,
+	M3ANTIHORARIO,
+	AGARRAROSOLTAR,
+	MODOMANUAL,
 	GRABARMOVIMIENTO,
-	DETENERYEJECUTAR,
-	MODOMANUAL
+	DETENERYEJECUTAR
 } UART_Cmd;
 
 typedef struct{
@@ -68,6 +69,7 @@ typedef struct{
 } Reg_Stamp;
 
 
+void limpiar_perifericos(void);
 void confUart(void);
 void confSteppers(void);
 void confServo(Servo_Motor *);
@@ -89,7 +91,7 @@ Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t 
 
 
 
-#define STD_PERIOD 150
+#define STD_PERIOD 100
 
 
 int main(void) {
@@ -97,9 +99,11 @@ int main(void) {
 	Servo_Motor servo_motor;
 	confServo(&servo_motor);
 	SysTick_Config(SystemCoreClock/40);
+	NVIC_SetPriority(SysTick_IRQn,10);
 	SYSTICK_IntCmd(DISABLE);
 	setEstado(MANUAL);
 	confUart();
+	limpiar_perifericos();
 	if(inicializarTimerDeGrabacion(TIMER_GRABACION)==ERROR) // inicializamos el timer que lleva la cuenta cuando se esta en modo grabacion
 			while(1){}                           //se produjo un error ya que el timer ya esta en uso( algun motor lo usa por ejemplo)
 	Estado estadoActual =MANUAL;
@@ -108,6 +112,7 @@ int main(void) {
 	static int32_t posicionFinal[4];
 	Reg_Stamp registroTemporal;
 	NVIC_EnableIRQ(TIMER1_IRQn);
+	NVIC_SetPriority(TIMER1_IRQn,1);
 	while(1)
 	{
 		while(estadoActual == estadoAnterior){  //Busca la transiciones de estados , mientras el estado actual sea igual al anterior se mantiene en este ciclo
@@ -148,12 +153,12 @@ int main(void) {
 				UART_Cmd comandoDeRetorno;
 				int32_t tmp = posicionFinal[i]-posicionInicial[i];
 				if(tmp == 0)// si la posicion inicial es igual a la final, el motor debe permanecer detenido
-					comandoDeRetorno = 48+(i+1)*3;  // La operacion matematica es para obtener el comando uart que sea de detencion para cada motor(esto depende del orden del enumerado UART_Cmd)
+					comandoDeRetorno = 96+(i+1)*3-2;  // La operacion matematica es para obtener el comando uart que sea de detencion para cada motor(esto depende del orden del enumerado UART_Cmd)
 				else{
 					if(tmp>0)
-						comandoDeRetorno = 48+(i+1)*3-1; //si la posicion final es mayor que la inicial, debemos girar antihorario, por eso restamos uno al comando uart
+						comandoDeRetorno = 96+(i+1)*3; //si la posicion final es mayor que la inicial, debemos girar antihorario, por eso restamos uno al comando uart
 					else
-						comandoDeRetorno = 48+(i+1)*3-2;//si la posicion final es menor que la inicial, giramos horario
+						comandoDeRetorno = 96+(i+1)*3-1;//si la posicion final es menor que la inicial, giramos horario
 					motorsFDR[i] ++;
 
 				}
@@ -178,7 +183,7 @@ int main(void) {
 					stop_steps(motorAuxiliar);
 					TIM_Cmd(TIMER_GRABACION,DISABLE);// si el motor llego a la posicion inicial, detiene su movimiento
 					timerDetencion = leerYResetearTimer(TIMER_GRABACION);
-					regStampUpdate((UART_Cmd)(48+(i+1)*3),GUARDAR,timerDetencion); // guarda el registro de cuando este motor debe detenerse, estado en el cual inicia la secuencia
+					regStampUpdate((UART_Cmd)(96+(i+1)*3-2),GUARDAR,timerDetencion); // guarda el registro de cuando este motor debe detenerse, estado en el cual inicia la secuencia
 					TIM_Cmd(TIMER_GRABACION,ENABLE);
 					motorsFDR[i]--;												// de grabacion
 				}
@@ -201,11 +206,18 @@ int main(void) {
 		if((estadoAnterior == EJECUCION||estadoAnterior ==GRABACION) && estadoActual == MANUAL){
 			setBanderaEnEstadoEjecucion(DESACTIVADA);
 			cmdMatch0InterruptTimGrabacion(DISABLE);
+			regStampUpdate(0,TERMINAR,0);
 			estadoAnterior = MANUAL;
 			detenerMovimientos();
 		}
 	}
 	return 0 ;
+}
+
+void limpiar_perifericos(void){
+	LPC_TIM0->MCR = 0;
+	LPC_TIM1->MCR = 0;
+	return;
 }
 
 
@@ -246,57 +258,73 @@ void confUart(void){
 void confSteppers(void){
 	Motor motor_0;
 	motor_0.number = 0;
-	motor_0.dir_portnum = 2;
-	motor_0.step_portnum = 2;
-	motor_0.dir_pinnum = 1;
-	motor_0.step_pinnum = 2;
-	motor_0.m_us_portnum = 2;
-	motor_0.m1_us_pinnum = 3;
-	motor_0.m2_us_pinnum = 4;
-	motor_0.m3_us_pinnum = 5;
+	motor_0.dir_portnum = 0;
+	motor_0.step_portnum = 0;
+	motor_0.dir_pinnum = 17;
+	motor_0.step_pinnum = 15;
+	motor_0.m_us_portnum = 0;
+	motor_0.m1_us_pinnum = 23;
+	motor_0.m2_us_pinnum = 24;
+	motor_0.m3_us_pinnum = 25;
 	motor_0.timer = LPC_TIM0;
 	motor_0.enable_portnum = 0;
 	motor_0.dir_value = DETENIDO;
-	motor_0.enable_pinnum = 11;
-
+	motor_0.enable_pinnum = 16;
 
 	Motor motor_1;
 	motor_1.number = 1;
 	motor_1.dir_portnum = 2;
 	motor_1.step_portnum = 2;
-	motor_1.dir_pinnum = 6;
-	motor_1.step_pinnum = 7;
+	motor_1.dir_pinnum = 1;
+	motor_1.step_pinnum = 2;
 	motor_1.m_us_portnum = 2;
-	motor_1.m1_us_pinnum = 8;
-	motor_1.m2_us_pinnum = 10;
-	motor_1.m3_us_pinnum = 11;
-	motor_1.enable_portnum = 2;
-	motor_1.enable_pinnum = 12;
-	motor_1.dir_value = DETENIDO;
+	motor_1.m1_us_pinnum = 3;
+	motor_1.m2_us_pinnum = 4;
+	motor_1.m3_us_pinnum = 5;
 	motor_1.timer = LPC_TIM0;
+	motor_1.enable_portnum = 0;
+	motor_1.dir_value = DETENIDO;
+	motor_1.enable_pinnum = 11;
 
 	Motor motor_2;
 	motor_2.number = 2;
-	motor_2.dir_portnum = 0;
-	motor_2.step_portnum = 0;
-	motor_2.dir_pinnum = 1;
-	motor_2.step_pinnum = 0;
-	motor_2.m_us_portnum = 0;
+	motor_2.dir_portnum = 2;
+	motor_2.step_portnum = 2;
+	motor_2.dir_pinnum = 6;
+	motor_2.step_pinnum = 7;
+	motor_2.m_us_portnum = 2;
 	motor_2.m1_us_pinnum = 8;
-	motor_2.m2_us_pinnum = 7;
-	motor_2.m3_us_pinnum = 6;
-	motor_2.timer = LPC_TIM0;
-	motor_2.enable_portnum = 0;
+	motor_2.m2_us_pinnum = 10;
+	motor_2.m3_us_pinnum = 11;
+	motor_2.enable_portnum = 2;
+	motor_2.enable_pinnum = 12;
 	motor_2.dir_value = DETENIDO;
-	motor_2.enable_pinnum = 18;
+	motor_2.timer = LPC_TIM0;
+
+	Motor motor_3;
+	motor_3.number = 3;
+	motor_3.dir_portnum = 0;
+	motor_3.step_portnum = 0;
+	motor_3.dir_pinnum = 1;
+	motor_3.step_pinnum = 0;
+	motor_3.m_us_portnum = 0;
+	motor_3.m1_us_pinnum = 8;
+	motor_3.m2_us_pinnum = 7;
+	motor_3.m3_us_pinnum = 6;
+	motor_3.timer = LPC_TIM0;
+	motor_3.enable_portnum = 0;
+	motor_3.dir_value = DETENIDO;
+	motor_3.enable_pinnum = 18;
 
 	motor_config(&motor_0);
 	motor_config(&motor_1);
 	motor_config(&motor_2);
+	motor_config(&motor_3);
 	motor_timer_init(&motor_0, STD_PERIOD);
 	micro_stepping_cfg(&motor_0, 1, 1, 1);
 	micro_stepping_cfg(&motor_1, 1, 1, 1);
 	micro_stepping_cfg(&motor_2, 1, 1, 1);
+	micro_stepping_cfg(&motor_3, 1, 1, 1);
 	start_motor_timer(&motor_0);
 	return;
 }
@@ -434,6 +462,7 @@ void ejecutarUARTCmd(UART_Cmd comando){
 	Motor *motor0 = get_motor(0);
 	Motor *motor1 = get_motor(1);
 	Motor *motor2 = get_motor(2);
+	Motor *motor3 = get_motor(3);
 	Servo_Motor *servo_motor;
 	switch(comando){
 	case AGARRAROSOLTAR:
@@ -469,6 +498,15 @@ void ejecutarUARTCmd(UART_Cmd comando){
 		break;
 	case M2DETENER:
 		stop_steps(motor2);
+		break;
+	case M3HORARIO:
+		start_steps(motor3,HORARIA);
+		break;
+	case M3ANTIHORARIO:
+		start_steps(motor3,ANTI_HORARIA);
+		break;
+	case M3DETENER:
+		stop_steps(motor3);
 		break;
 	case GRABARMOVIMIENTO:
 		setEstado(GRABACION);

@@ -49,27 +49,37 @@ namespace Robotic_arm_interface
         public void keyDown(MotorName motorName, KeyType keyType)
         {
             Motor motor = this.parseMotor(motorName);
-            char cmd = '0';
+            char cmd = '1';
 
             switch (keyType)
             {
+      
                 case KeyType.ANTIHORARIA:
-                    cmd = motor.getAntiHCmd();
-                    motor.setEstado(Estado.ANTIHORARIO);
+                    if(motor.getEstado() != Estado.ANTIHORARIO)
+                    {
+                        cmd = motor.getAntiHCmd();
+                        motor.setEstado(Estado.ANTIHORARIO);
+                        this.interfaz.serialPortWrite(cmd);
+                        this.cmdsPress.Add(cmd);
+                    }                 
                     break;
                 case KeyType.HORARIA:
-                    cmd = motor.getHoraCmd();
-                    motor.setEstado(Estado.HORARIO);
+                    if (motor.getEstado() != Estado.HORARIO)
+                    {
+                        cmd = motor.getHoraCmd();
+                        motor.setEstado(Estado.HORARIO);
+                        this.interfaz.serialPortWrite(cmd);
+                        this.cmdsPress.Add(cmd);
+                    }
                     break;
             }
-            this.interfaz.serialPortWrite(cmd);
-            this.cmdsPress.Add(cmd);
+            
         }
 
         public void keyUp(MotorName motorName, KeyType keyType)
         {
             Motor motor = this.parseMotor(motorName);
-            char cmd = '0';
+            char cmd = '1';
 
             switch (keyType)
             {
@@ -117,7 +127,7 @@ namespace Robotic_arm_interface
                 case MotorName.MUNIECA:
                     return this.Muñeca;
                 default:
-                    return new Motor('0', '0', '0'); //error
+                    return new Motor('2', '3', '4'); //error
 
             }
         }

@@ -39,7 +39,7 @@ namespace Robotic_arm_interface
         public void serialPortWrite(char cmd)
         {
 
-            /*
+            
            if (serialPort1.IsOpen)
             {
             lblTest.Text = "se envio el comando " + cmd;
@@ -49,9 +49,9 @@ namespace Robotic_arm_interface
             {
                 this.conectionHelp.ShowDialog();
             }
-            */
+            
 
-            lblTest.Text = "se envio el comando " + cmd;
+            //lblTest.Text = "se envio el comando " + cmd;
 
         }
 
@@ -62,14 +62,18 @@ namespace Robotic_arm_interface
 
         private void btnConectPort_Click(object sender, EventArgs e)
         {
-            try
+            if(serialPort1.IsOpen == false)
             {
-                serialPort1.Open();
+                try
+                {
+                    serialPort1.Open();
+                }
+                catch (Exception ex)
+                {
+                    this.conectionHelp.ShowDialog();
+                }
             }
-            catch (Exception ex)
-            {
-                this.conectionHelp.ShowDialog();
-            }
+           
         }
 
         private void setup()

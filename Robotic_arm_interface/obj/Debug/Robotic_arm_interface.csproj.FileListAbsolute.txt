@@ -9,3 +9,14 @@ C:\Users\Pato\Documents\2019 2\ED3\ED3_Proyecto_brazo_robotico\Robotic_arm_inter
 C:\Users\Pato\Documents\2019 2\ED3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.pdb
 C:\Users\Pato\Documents\2019 2\ED3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.FormHelp.resources
 C:\Users\Pato\Documents\2019 2\ED3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.FormConectMsg.resources
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\bin\Debug\Robotic_arm_interface.exe.config
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\bin\Debug\Robotic_arm_interface.exe
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\bin\Debug\Robotic_arm_interface.pdb
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.csprojAssemblyReference.cache
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.Form1.resources
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.FormHelp.resources
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.FormConectMsg.resources
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.Properties.Resources.resources
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.csproj.GenerateResource.cache
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.exe
+C:\Users\nacho\Documents\Nacho\Electronica Digital 3\ED3_Proyecto_brazo_robotico\Robotic_arm_interface\obj\Debug\Robotic_arm_interface.pdb
