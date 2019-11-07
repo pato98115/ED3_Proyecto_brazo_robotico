@@ -13,6 +13,7 @@
 #include "lpc17xx_timer.h"
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_pwm.h"
+#include "lpc17xx_adc.h"
 #include "servo_motors.h"
 #include "lpc17xx_systick.h"
 
@@ -89,6 +90,13 @@ int32_t posicion(uint8_t numeroDeMotor,uint8_t put_get,DIR_Value direccion);
 void getPosSteppers(int32_t *);
 Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t cuentaTimer);
 
+void pote_setup();
+void conf_adcpin(uint8_t channel);
+void pote_start();
+void pote_stop();
+uint8_t adc_to_porcentaje(uint16_t adc_val);
+uint32_t porcentaje_to_value(uint8_t porcentaje, uint32_t sup_lim, uint32_t inf_lim);
+#define POTE_ADC_CHANNEL ADC_CHANNEL_3
 
 
 #define STD_PERIOD 1000
@@ -104,6 +112,10 @@ int main(void) {
 	SYSTICK_IntCmd(DISABLE);
 	setEstado(MANUAL);
 	confUart();
+	//ADC---
+	pote_setup();
+	pote_start();
+	//------
 	if(inicializarTimerDeGrabacion(TIMER_GRABACION)==ERROR) // inicializamos el timer que lleva la cuenta cuando se esta en modo grabacion
 			while(1){}                           //se produjo un error ya que el timer ya esta en uso( algun motor lo usa por ejemplo)
 	Estado estadoActual =MANUAL;
@@ -591,6 +603,99 @@ Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t 
 	return regStamp[0];
 }
 
+
+
+void pote_setup(){
+	//canal 3 pin P0.26
+	conf_adcpin(POTE_ADC_CHANNEL);
+	ADC_Init(LPC_ADC, 20000); //20KHz
+	ADC_ChannelCmd (LPC_ADC, POTE_ADC_CHANNEL, ENABLE);
+	ADC_IntConfig(LPC_ADC, POTE_ADC_CHANNEL, ENABLE);
+	ADC_PowerdownCmd(LPC_ADC, 0); //apago el adc mientras no lo uso
+	NVIC_EnableIRQ(ADC_IRQn);
+	return;
+}
+
+void conf_adcpin(uint8_t channel){
+	PINSEL_CFG_Type adc_pin;
+
+	if(channel > 7){
+		while(1){} //error solo hay canales 0 a 7
+	}
+
+	adc_pin.OpenDrain = PINSEL_PINMODE_NORMAL;
+	adc_pin.Pinmode = PINSEL_PINMODE_PULLUP;
+	switch(channel){
+	case 0:
+		adc_pin.Funcnum = 1;
+		adc_pin.Portnum = 0;
+		adc_pin.Pinnum = 23;
+		break;
+	case 1:
+		adc_pin.Funcnum = 1;
+		adc_pin.Portnum = 0;
+		adc_pin.Pinnum = 24;
+		break;
+	case 2:
+		adc_pin.Funcnum = 1;
+		adc_pin.Portnum = 0;
+		adc_pin.Pinnum = 25;
+		break;
+	case 3:
+		adc_pin.Funcnum = 1;
+		adc_pin.Portnum = 0;
+		adc_pin.Pinnum = 26;
+		break;
+	case 4:
+		adc_pin.Funcnum = 3;
+		adc_pin.Portnum = 1;
+		adc_pin.Pinnum = 30;
+		break;
+	case 5:
+		adc_pin.Funcnum = 3;
+		adc_pin.Portnum = 1;
+		adc_pin.Pinnum = 31;
+		break;
+	case 6:
+		adc_pin.Funcnum = 2;
+		adc_pin.Portnum = 0;
+		adc_pin.Pinnum = 3;
+		break;
+	case 7:
+		adc_pin.Funcnum = 2;
+		adc_pin.Portnum = 0;
+		adc_pin.Pinnum = 2;
+		break;
+	default:
+		break;
+	}
+	PINSEL_ConfigPin(&adc_pin);
+	return;
+}
+
+void pote_start(){
+	ADC_PowerdownCmd(LPC_ADC, ENABLE); //Prendo el adc
+	ADC_BurstCmd(LPC_ADC, ENABLE);
+	ADC_StartCmd(LPC_ADC, ADC_START_CONTINUOUS);
+}
+
+void pote_stop(){
+	ADC_PowerdownCmd(LPC_ADC, DISABLE); //apago el adc mientras no lo uso
+	ADC_BurstCmd(LPC_ADC, DISABLE);
+}
+
+uint8_t adc_to_porcentaje(uint16_t adc_val){
+	uint8_t porcentaje = (uint8_t)(100*adc_val)/4095;
+	return porcentaje;
+}
+
+uint32_t porcentaje_to_value(uint8_t porcentaje, uint32_t sup_lim, uint32_t inf_lim){
+	uint32_t value = ((inf_lim*100) + ((sup_lim - inf_lim)*porcentaje))/100;
+	return value;
+}
+
+
+
 //Handlers
 
 void TIMER0_IRQHandler(void){
@@ -673,6 +778,18 @@ void UART0_IRQHandler(void){
 	return;
 }
 
+void ADC_IRQHandler(void){
+	if(ADC_ChannelGetStatus(LPC_ADC, POTE_ADC_CHANNEL, ADC_DATA_DONE)){
+		Servo_Motor* servo_motor = get_servo_motor(1);
+
+		uint16_t adc_pote = ADC_ChannelGetData(LPC_ADC, POTE_ADC_CHANNEL);
+		uint8_t adc_porcentaje = adc_to_porcentaje(adc_pote);
+		uint32_t new_duty_cycle = porcentaje_to_value(adc_porcentaje, servo_motor->sup_limit, servo_motor->inf_limit);
+		servo_motor->duty_cycle = new_duty_cycle;
+		servo_update_duty_cycle(servo_motor);
+	}
+	return;
+}
 
 
 
