@@ -91,10 +91,11 @@ Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t 
 
 
 
-#define STD_PERIOD 100
+#define STD_PERIOD 1000
 
 
 int main(void) {
+	limpiar_perifericos();
 	confSteppers();
 	Servo_Motor servo_motor;
 	confServo(&servo_motor);
@@ -103,7 +104,6 @@ int main(void) {
 	SYSTICK_IntCmd(DISABLE);
 	setEstado(MANUAL);
 	confUart();
-	limpiar_perifericos();
 	if(inicializarTimerDeGrabacion(TIMER_GRABACION)==ERROR) // inicializamos el timer que lleva la cuenta cuando se esta en modo grabacion
 			while(1){}                           //se produjo un error ya que el timer ya esta en uso( algun motor lo usa por ejemplo)
 	Estado estadoActual =MANUAL;
