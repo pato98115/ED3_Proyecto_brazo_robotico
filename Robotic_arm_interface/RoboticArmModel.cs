@@ -35,6 +35,7 @@ namespace Robotic_arm_interface
             cmdsStatesPairs.Add(ArmState.MANUAL, 'n');
             cmdsStatesPairs.Add(ArmState.GRABACION, 'o');
             cmdsStatesPairs.Add(ArmState.EJECUCION, 'p');
+            cmdsStatesPairs.Add(ArmState.MANUAL_POTE, 'q');
         }
 
         public void createMotors()
@@ -142,6 +143,8 @@ namespace Robotic_arm_interface
                     return Color.LightSalmon;
                 case ArmState.EJECUCION:
                     return Color.LightGray;
+                case ArmState.MANUAL_POTE:
+                    return Color.LightBlue;
                 default:
                     return Color.DarkGray;
             }
@@ -175,6 +178,14 @@ namespace Robotic_arm_interface
             this.setState(ArmState.EJECUCION);
             char cmd;
             this.cmdsStatesPairs.TryGetValue(ArmState.EJECUCION, out cmd);
+            interfaz.serialPortWrite(cmd);
+        }
+
+        internal void manualPote()
+        {
+            this.setState(ArmState.MANUAL_POTE);
+            char cmd;
+            this.cmdsStatesPairs.TryGetValue(ArmState.MANUAL_POTE, out cmd);
             interfaz.serialPortWrite(cmd);
         }
 

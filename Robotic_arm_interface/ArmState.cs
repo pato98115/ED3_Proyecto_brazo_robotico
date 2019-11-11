@@ -5,5 +5,6 @@
         MANUAL,
         GRABACION,
         EJECUCION,
+        MANUAL_POTE,
     }
 }

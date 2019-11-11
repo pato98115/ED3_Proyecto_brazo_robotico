@@ -148,7 +148,7 @@
             this.lblHelpExplain.AutoSize = true;
             this.lblHelpExplain.Location = new System.Drawing.Point(12, 9);
             this.lblHelpExplain.Name = "lblHelpExplain";
-            this.lblHelpExplain.Size = new System.Drawing.Size(229, 91);
+            this.lblHelpExplain.Size = new System.Drawing.Size(229, 104);
             this.lblHelpExplain.TabIndex = 19;
             this.lblHelpExplain.Text = resources.GetString("lblHelpExplain.Text");
             // 

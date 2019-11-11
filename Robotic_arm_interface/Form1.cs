@@ -43,6 +43,7 @@ namespace Robotic_arm_interface
            if (serialPort1.IsOpen)
             {
             lblTest.Text = "se envio el comando " + cmd;
+            //lblTest.Text = "";
             serialPort1.Write(""+cmd);
             }
             else
@@ -246,6 +247,12 @@ namespace Robotic_arm_interface
         {
             if (rbtnEjecutar.Checked == true)
                 this.roboticArmModel.ejecutar();
+        }
+
+        private void rbtnManPote_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbtnManPote.Checked == true)
+                this.roboticArmModel.manualPote();
         }
 
         private void btnBaseA_MouseDown(object sender, MouseEventArgs e)

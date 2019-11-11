@@ -121,9 +121,10 @@
     <value>El movimiento se puede manejar dando click a 
 estos botones de movimiento o mas facilmente 
 desde el teclado como se explica aqui.
-Cuenta con tres modos seleccionables:
+Cuenta con cuatro modos seleccionables:
 -Manual
 -Grabacion
--Ejecucion</value>
+-Ejecucion
+-Manual+Pote</value>
   </data>
 </root>
