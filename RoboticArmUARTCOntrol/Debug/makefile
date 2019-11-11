@@ -30,7 +30,7 @@ all: RoboticArmUARTControl.axf
 RoboticArmUARTControl.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -L"C:\Users\Pato\Documents\LPCXpresso_8.2.2_650\workspace2\CMSISv2p00_LPC17xx\Debug" -Xlinker -Map="RoboticArmUARTControl.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m3 -mthumb -T "RoboticArmUARTControl_Debug.ld" -o "RoboticArmUARTControl.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -L"C:\Users\nacho\Documents\LPCXpresso_8.2.2_650\workspace_CMSIS\CMSISv2p00_LPC17xx\Debug" -Xlinker -Map="RoboticArmUARTControl.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m3 -mthumb -T "RoboticArmUARTControl_Debug.ld" -o "RoboticArmUARTControl.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

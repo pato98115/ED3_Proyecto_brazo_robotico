@@ -29,7 +29,9 @@ typedef enum{
 typedef enum{
 	GRABACION =0,
 	EJECUCION,
-	MANUAL
+	MANUAL,
+	MANUALCONPOTENCIOMETRO,
+	CONFIGURACION
 }  Estado;
 
 typedef enum{
@@ -61,7 +63,9 @@ typedef enum{
 	AGARRAROSOLTAR,
 	MODOMANUAL,
 	GRABARMOVIMIENTO,
-	DETENERYEJECUTAR
+	DETENERYEJECUTAR,
+	MODOMANUALCONPOTENCIOMETRO,
+	CAMBIOVELOCIDAD
 } UART_Cmd;
 
 typedef struct{
@@ -94,8 +98,8 @@ void pote_setup();
 void conf_adcpin(uint8_t channel);
 void pote_start();
 void pote_stop();
-uint8_t adc_to_porcentaje(uint16_t adc_val);
-uint32_t porcentaje_to_value(uint8_t porcentaje, uint32_t sup_lim, uint32_t inf_lim);
+uint16_t adc_to_porcentaje(uint16_t adc_val);
+uint32_t porcentaje_to_value(uint16_t porcentaje, uint32_t sup_lim, uint32_t inf_lim);
 #define POTE_ADC_CHANNEL ADC_CHANNEL_3
 
 
@@ -110,7 +114,7 @@ int main(void) {
 	SysTick_Config(SystemCoreClock/40);
 	NVIC_SetPriority(SysTick_IRQn,10);
 	SYSTICK_IntCmd(DISABLE);
-	setEstado(MANUAL);
+	setEstado(CONFIGURACION);
 	confUart();
 	//ADC---
 	pote_setup();
@@ -118,8 +122,10 @@ int main(void) {
 	//------
 	if(inicializarTimerDeGrabacion(TIMER_GRABACION)==ERROR) // inicializamos el timer que lleva la cuenta cuando se esta en modo grabacion
 			while(1){}                           //se produjo un error ya que el timer ya esta en uso( algun motor lo usa por ejemplo)
-	Estado estadoActual =MANUAL;
-	Estado estadoAnterior = MANUAL;
+	Estado estadoActual =CONFIGURACION;
+	Estado estadoAnterior = CONFIGURACION;
+	ADC_ChannelCmd(LPC_ADC,POTE_ADC_CHANNEL,DISABLE);
+	NVIC_DisableIRQ(ADC_IRQn);
 	static int32_t posicionInicial[4];
 	static int32_t posicionFinal[4];
 	Reg_Stamp registroTemporal;
@@ -143,8 +149,9 @@ int main(void) {
 			}
 			estadoActual = getEstado();
 		}
-		if(estadoAnterior == MANUAL || (estadoAnterior == EJECUCION && estadoActual == GRABACION)){
-											//detectamos si hay una transicion de estado MANUAL a GRABACION o EJECUCION a GRABACION
+		if(estadoActual == GRABACION){
+			ADC_ChannelCmd(LPC_ADC,POTE_ADC_CHANNEL,DISABLE);
+			NVIC_DisableIRQ(ADC_IRQn);//detectamos si hay una transicion de estado MANUAL a GRABACION o EJECUCION a GRABACION
 			regStampUpdate(0,INICIAR,0);
 			TIM_Cmd(TIMER_GRABACION,DISABLE);
 			leerYResetearTimer(TIMER_GRABACION);//reseteamos el timer de grabacion y deshabilitamos las interrupciones y el reseteo por MR0
@@ -215,12 +222,42 @@ int main(void) {
 			setBanderaEnEstadoEjecucion(DESACTIVADA);						//por cada llamado. Aqui se habilita el timer y
 			estadoAnterior = EJECUCION;										//
 		}
-		if((estadoAnterior == EJECUCION||estadoAnterior ==GRABACION) && estadoActual == MANUAL){
+		if((estadoAnterior == EJECUCION||estadoAnterior ==GRABACION) && (estadoActual == MANUAL || estadoActual == MANUALCONPOTENCIOMETRO)){
 			setBanderaEnEstadoEjecucion(DESACTIVADA);
 			cmdMatch0InterruptTimGrabacion(DISABLE);
 			regStampUpdate(0,TERMINAR,0);
-			estadoAnterior = MANUAL;
+			if(estadoActual == MANUAL)
+				estadoAnterior = MANUAL;
+			else{
+				if(estadoActual == MANUALCONPOTENCIOMETRO){
+					estadoAnterior = MANUALCONPOTENCIOMETRO;
+					ADC_ChannelCmd(LPC_ADC,POTE_ADC_CHANNEL,ENABLE);
+					NVIC_EnableIRQ(ADC_IRQn);
+				}
+			}
 			detenerMovimientos();
+		}
+		if((estadoAnterior == MANUAL||estadoAnterior == CONFIGURACION) && estadoActual == MANUALCONPOTENCIOMETRO){
+			ADC_ChannelCmd(LPC_ADC,POTE_ADC_CHANNEL,ENABLE);
+			NVIC_EnableIRQ(ADC_IRQn);
+			estadoAnterior = MANUALCONPOTENCIOMETRO;
+		}
+		if(estadoAnterior == MANUALCONPOTENCIOMETRO && estadoActual == MANUAL){
+			ADC_ChannelCmd(LPC_ADC,POTE_ADC_CHANNEL,DISABLE);
+			NVIC_DisableIRQ(ADC_IRQn);
+			estadoAnterior = MANUAL;
+		}
+		if(estadoActual == CONFIGURACION){
+			detenerMovimientos();
+			ADC_ChannelCmd(LPC_ADC,POTE_ADC_CHANNEL,DISABLE);
+			NVIC_DisableIRQ(ADC_IRQn);
+			estadoAnterior = CONFIGURACION;
+		}
+		if((estadoAnterior == CONFIGURACION )&& (estadoActual == MANUAL|| estadoActual == GRABACION)){
+			if(estadoActual == MANUAL)
+				estadoAnterior = MANUAL;
+			else
+				estadoAnterior = GRABACION;
 		}
 	}
 	return 0 ;
@@ -295,7 +332,7 @@ void confSteppers(void){
 	motor_1.m1_us_pinnum = 3;
 	motor_1.m2_us_pinnum = 4;
 	motor_1.m3_us_pinnum = 5;
-	motor_1.timer = LPC_TIM0;
+	motor_1.timer = LPC_TIM2;
 	motor_1.enable_portnum = 0;
 	motor_1.dir_value = DETENIDO;
 	motor_1.enable_pinnum = 11;
@@ -313,7 +350,7 @@ void confSteppers(void){
 	motor_2.enable_portnum = 2;
 	motor_2.enable_pinnum = 12;
 	motor_2.dir_value = DETENIDO;
-	motor_2.timer = LPC_TIM0;
+	motor_2.timer = LPC_TIM3;
 
 	Motor motor_3;
 	motor_3.number = 3;
@@ -325,7 +362,7 @@ void confSteppers(void){
 	motor_3.m1_us_pinnum = 8;
 	motor_3.m2_us_pinnum = 7;
 	motor_3.m3_us_pinnum = 6;
-	motor_3.timer = LPC_TIM0;
+	motor_3.timer = LPC_TIM3;
 	motor_3.enable_portnum = 0;
 	motor_3.dir_value = DETENIDO;
 	motor_3.enable_pinnum = 18;
@@ -335,11 +372,15 @@ void confSteppers(void){
 	motor_config(&motor_2);
 	motor_config(&motor_3);
 	motor_timer_init(&motor_0, STD_PERIOD);
+	motor_timer_init(&motor_1, STD_PERIOD);
+	motor_timer_init(&motor_2, STD_PERIOD);
 	micro_stepping_cfg(&motor_0, 1, 1, 1);
 	micro_stepping_cfg(&motor_1, 1, 1, 1);
 	micro_stepping_cfg(&motor_2, 1, 1, 1);
 	micro_stepping_cfg(&motor_3, 1, 1, 1);
 	start_motor_timer(&motor_0);
+	start_motor_timer(&motor_1);
+	start_motor_timer(&motor_2);
 	return;
 }
 
@@ -531,6 +572,12 @@ void ejecutarUARTCmd(UART_Cmd comando){
 	case MODOMANUAL:
 		setEstado(MANUAL);
 		break;
+	case MODOMANUALCONPOTENCIOMETRO:
+		setEstado(MANUALCONPOTENCIOMETRO);
+		break;
+	case CAMBIOVELOCIDAD:
+		setEstado(CONFIGURACION);
+		break;
 	default:
 		break;
 	}
@@ -608,7 +655,7 @@ Reg_Stamp regStampUpdate(UART_Cmd comandoUart,RegStampCmd comandoStamp,uint32_t 
 void pote_setup(){
 	//canal 3 pin P0.26
 	conf_adcpin(POTE_ADC_CHANNEL);
-	ADC_Init(LPC_ADC, 20000); //20KHz
+	ADC_Init(LPC_ADC, 10); //20KHz
 	ADC_ChannelCmd (LPC_ADC, POTE_ADC_CHANNEL, ENABLE);
 	ADC_IntConfig(LPC_ADC, POTE_ADC_CHANNEL, ENABLE);
 	ADC_PowerdownCmd(LPC_ADC, 0); //apago el adc mientras no lo uso
@@ -624,7 +671,7 @@ void conf_adcpin(uint8_t channel){
 	}
 
 	adc_pin.OpenDrain = PINSEL_PINMODE_NORMAL;
-	adc_pin.Pinmode = PINSEL_PINMODE_PULLUP;
+	adc_pin.Pinmode = PINSEL_PINMODE_TRISTATE;
 	switch(channel){
 	case 0:
 		adc_pin.Funcnum = 1;
@@ -684,12 +731,12 @@ void pote_stop(){
 	ADC_BurstCmd(LPC_ADC, DISABLE);
 }
 
-uint8_t adc_to_porcentaje(uint16_t adc_val){
-	uint8_t porcentaje = (uint8_t)(100*adc_val)/4095;
+uint16_t adc_to_porcentaje(uint16_t adc_val){
+	uint16_t porcentaje = (100*adc_val)/4095;
 	return porcentaje;
 }
 
-uint32_t porcentaje_to_value(uint8_t porcentaje, uint32_t sup_lim, uint32_t inf_lim){
+uint32_t porcentaje_to_value(uint16_t porcentaje, uint32_t sup_lim, uint32_t inf_lim){
 	uint32_t value = ((inf_lim*100) + ((sup_lim - inf_lim)*porcentaje))/100;
 	return value;
 }
@@ -703,8 +750,36 @@ void TIMER0_IRQHandler(void){
 	for(uint8_t i = 0; i < 4; i++){
 		if(get_motor_flag(i) == 1){
 			Motor *motor = get_motor(i);
-			do_step(motor);
-			posicion(i,PUT,motor->dir_value);
+			if(motor->timer == LPC_TIM0){
+				do_step(motor);
+				posicion(i,PUT,motor->dir_value);
+			}
+		}
+	}
+	return;
+}
+void TIMER2_IRQHandler(void){
+	TIM_ClearIntPending(LPC_TIM2, TIM_MR0_INT);
+	for(uint8_t i = 0; i < 4; i++){
+		if(get_motor_flag(i) == 1){
+			Motor *motor = get_motor(i);
+			if(motor->timer == LPC_TIM2){
+				do_step(motor);
+				posicion(i,PUT,motor->dir_value);
+			}
+		}
+	}
+	return;
+}
+void TIMER3_IRQHandler(void){
+	TIM_ClearIntPending(LPC_TIM3, TIM_MR0_INT);
+	for(uint8_t i = 0; i < 4; i++){
+		if(get_motor_flag(i) == 1){
+			Motor *motor = get_motor(i);
+			if(motor->timer == LPC_TIM3){
+				do_step(motor);
+				posicion(i,PUT,motor->dir_value);
+			}
 		}
 	}
 	return;
@@ -744,14 +819,11 @@ void SysTick_Handler(void){
 
 void UART0_IRQHandler(void){
 	uint32_t intscr,tmp;
-	static uint8_t info[3];
+	static uint8_t info[2];
 	intscr = UART_GetIntId((LPC_UART_TypeDef *)LPC_UART0);
 	tmp = intscr & UART_IIR_INTID_MASK;
 	if(tmp == UART_IIR_INTID_RDA|| tmp == UART_IIR_INTID_CTI){
 		UART_Receive((LPC_UART_TypeDef *)LPC_UART0,info,sizeof(info),NONE_BLOCKING);
-		*(info+1) = (uint8_t)'\r';
-		*(info+2) = (uint8_t)'\n';
-		UART_Send((LPC_UART_TypeDef *)LPC_UART0,info,sizeof(info),NONE_BLOCKING);
 		Estado estadoActual;
 		estadoActual = getEstado();
 		switch(estadoActual){
@@ -769,10 +841,41 @@ void UART0_IRQHandler(void){
 				regStampUpdate(info[0],GUARDAR,TIMER_GRABACION->TC);  // solo se guarda el movimiento en caso de que no se afecten a los estados,
 			break; 								//	es decir que los movimientos guardados afectan solo a los motores
 		case EJECUCION:
-			if(info[0]==MODOMANUAL || info[0] == GRABARMOVIMIENTO){
+			if(info[0]==MODOMANUAL || info[0] == GRABARMOVIMIENTO || info[0]== MODOMANUALCONPOTENCIOMETRO){
 				ejecutarUARTCmd(info[0]);
 			}
 			break;
+		case MANUALCONPOTENCIOMETRO:
+			if(info[0]!= DETENERYEJECUTAR && info[0]!=AGARRAROSOLTAR)
+				ejecutarUARTCmd(info[0]);
+			else{
+				uint8_t errormsg[] = "No se puede ejecutar este comando bajo modo manual con potenciometro\n\r";
+				UART_Send((LPC_UART_TypeDef *)LPC_UART0,errormsg,sizeof(errormsg),NONE_BLOCKING);
+			}
+			break;
+		case CONFIGURACION:
+			if((info[0]>=0)&& (info[0]<10)){
+				static uint8_t bandera[CANTIDAD_STEPPERS] = {0,0,0,0};
+				uint8_t cant = 0;
+				for(uint8_t i = 0; i<CANTIDAD_STEPPERS; i++){
+					if(bandera[i] == 1){
+						cant++;
+						Motor *motor = get_motor(i);			//modif vel motor i
+						uint32_t periodo = STD_PERIOD/info[0];
+						ch_velocity(motor->timer,periodo);
+						bandera[i] =0;    						//bajar bandera
+					}
+				}
+				if(cant == 0){
+					if(info[0]<4)
+						bandera[info[0]] = 1;
+				}
+			}
+			else{
+				if((info[0]>=MODOMANUAL)&&(info[0]<=MODOMANUALCONPOTENCIOMETRO)&&(info[0]!=DETENERYEJECUTAR)){
+					ejecutarUARTCmd(info[0]);
+				}
+			}
 		}
 	}
 	return;
@@ -783,10 +886,16 @@ void ADC_IRQHandler(void){
 		Servo_Motor* servo_motor = get_servo_motor(1);
 
 		uint16_t adc_pote = ADC_ChannelGetData(LPC_ADC, POTE_ADC_CHANNEL);
-		uint8_t adc_porcentaje = adc_to_porcentaje(adc_pote);
+		uint16_t adc_porcentaje = adc_to_porcentaje(adc_pote);
 		uint32_t new_duty_cycle = porcentaje_to_value(adc_porcentaje, servo_motor->sup_limit, servo_motor->inf_limit);
-		servo_motor->duty_cycle = new_duty_cycle;
-		servo_update_duty_cycle(servo_motor);
+		if(servo_motor->duty_cycle != new_duty_cycle){
+			servo_motor->duty_cycle = new_duty_cycle;
+			servo_update_duty_cycle(servo_motor);
+		}
+		Estado estadoActual = getEstado();
+		if(estadoActual != MANUALCONPOTENCIOMETRO){
+			NVIC_DisableIRQ(ADC_IRQn);
+		}
 	}
 	return;
 }

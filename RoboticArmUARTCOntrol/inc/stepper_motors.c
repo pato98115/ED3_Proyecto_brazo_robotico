@@ -127,6 +127,7 @@ void start_steps(Motor *motor, DIR_Value direction){
  */
 void ch_velocity(LPC_TIM_TypeDef *TIMx, uint32_t new_period){
 	TIM_UpdateMatchValue(TIMx, 0, new_period);
+	TIM_ResetCounter(TIMx);
 	return;
 }
 /*
