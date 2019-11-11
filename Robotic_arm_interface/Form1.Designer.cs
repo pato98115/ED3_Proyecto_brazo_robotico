@@ -47,18 +47,30 @@
             this.btnHelp = new System.Windows.Forms.Button();
             this.btnConectPort = new System.Windows.Forms.Button();
             this.rbtnManPote = new System.Windows.Forms.RadioButton();
+            this.nudCodoMunieca = new System.Windows.Forms.NumericUpDown();
+            this.nudHombro = new System.Windows.Forms.NumericUpDown();
+            this.nudBase = new System.Windows.Forms.NumericUpDown();
+            this.lblCodoMuniecaVel = new System.Windows.Forms.Label();
+            this.lblHombroVel = new System.Windows.Forms.Label();
+            this.lblBaseVel = new System.Windows.Forms.Label();
+            this.rbtnConfiguracion = new System.Windows.Forms.RadioButton();
+            this.lblTest2 = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCodoMunieca)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHombro)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBase)).BeginInit();
             this.SuspendLayout();
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.rbtnConfiguracion);
             this.panel2.Controls.Add(this.rbtnManPote);
             this.panel2.Controls.Add(this.rbtnEjecutar);
             this.panel2.Controls.Add(this.rbtnGrabar);
             this.panel2.Controls.Add(this.rbtnManual);
-            this.panel2.Location = new System.Drawing.Point(35, 45);
+            this.panel2.Location = new System.Drawing.Point(16, 42);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(113, 93);
+            this.panel2.Size = new System.Drawing.Size(113, 115);
             this.panel2.TabIndex = 1;
             // 
             // rbtnEjecutar
@@ -100,7 +112,7 @@
             // btnBaseA
             // 
             this.btnBaseA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnBaseA.Location = new System.Drawing.Point(90, 144);
+            this.btnBaseA.Location = new System.Drawing.Point(71, 163);
             this.btnBaseA.Name = "btnBaseA";
             this.btnBaseA.Size = new System.Drawing.Size(58, 53);
             this.btnBaseA.TabIndex = 0;
@@ -112,7 +124,7 @@
             // btnHombroH
             // 
             this.btnHombroH.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHombroH.Location = new System.Drawing.Point(154, 144);
+            this.btnHombroH.Location = new System.Drawing.Point(135, 163);
             this.btnHombroH.Name = "btnHombroH";
             this.btnHombroH.Size = new System.Drawing.Size(58, 53);
             this.btnHombroH.TabIndex = 1;
@@ -124,7 +136,7 @@
             // btnHombroA
             // 
             this.btnHombroA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHombroA.Location = new System.Drawing.Point(154, 85);
+            this.btnHombroA.Location = new System.Drawing.Point(135, 104);
             this.btnHombroA.Name = "btnHombroA";
             this.btnHombroA.Size = new System.Drawing.Size(58, 53);
             this.btnHombroA.TabIndex = 2;
@@ -136,7 +148,7 @@
             // btnBaseH
             // 
             this.btnBaseH.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnBaseH.Location = new System.Drawing.Point(218, 144);
+            this.btnBaseH.Location = new System.Drawing.Point(199, 163);
             this.btnBaseH.Name = "btnBaseH";
             this.btnBaseH.Size = new System.Drawing.Size(58, 53);
             this.btnBaseH.TabIndex = 3;
@@ -148,7 +160,7 @@
             // btnCodoH
             // 
             this.btnCodoH.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCodoH.Location = new System.Drawing.Point(368, 144);
+            this.btnCodoH.Location = new System.Drawing.Point(349, 163);
             this.btnCodoH.Name = "btnCodoH";
             this.btnCodoH.Size = new System.Drawing.Size(60, 53);
             this.btnCodoH.TabIndex = 4;
@@ -160,7 +172,7 @@
             // btnCodoA
             // 
             this.btnCodoA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCodoA.Location = new System.Drawing.Point(368, 85);
+            this.btnCodoA.Location = new System.Drawing.Point(349, 104);
             this.btnCodoA.Name = "btnCodoA";
             this.btnCodoA.Size = new System.Drawing.Size(60, 53);
             this.btnCodoA.TabIndex = 5;
@@ -172,7 +184,7 @@
             // btnMuñecaH
             // 
             this.btnMuñecaH.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMuñecaH.Location = new System.Drawing.Point(434, 144);
+            this.btnMuñecaH.Location = new System.Drawing.Point(415, 163);
             this.btnMuñecaH.Name = "btnMuñecaH";
             this.btnMuñecaH.Size = new System.Drawing.Size(60, 53);
             this.btnMuñecaH.TabIndex = 6;
@@ -184,7 +196,7 @@
             // btnMuñecaA
             // 
             this.btnMuñecaA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMuñecaA.Location = new System.Drawing.Point(434, 85);
+            this.btnMuñecaA.Location = new System.Drawing.Point(415, 104);
             this.btnMuñecaA.Name = "btnMuñecaA";
             this.btnMuñecaA.Size = new System.Drawing.Size(60, 53);
             this.btnMuñecaA.TabIndex = 7;
@@ -196,7 +208,7 @@
             // btnGarraA_S
             // 
             this.btnGarraA_S.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGarraA_S.Location = new System.Drawing.Point(179, 203);
+            this.btnGarraA_S.Location = new System.Drawing.Point(165, 222);
             this.btnGarraA_S.Name = "btnGarraA_S";
             this.btnGarraA_S.Size = new System.Drawing.Size(170, 40);
             this.btnGarraA_S.TabIndex = 8;
@@ -208,7 +220,7 @@
             // lblTest
             // 
             this.lblTest.AutoSize = true;
-            this.lblTest.Location = new System.Drawing.Point(365, 9);
+            this.lblTest.Location = new System.Drawing.Point(346, 13);
             this.lblTest.Name = "lblTest";
             this.lblTest.Size = new System.Drawing.Size(35, 13);
             this.lblTest.TabIndex = 9;
@@ -216,7 +228,7 @@
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(525, 254);
+            this.btnHelp.Location = new System.Drawing.Point(621, 260);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(75, 23);
             this.btnHelp.TabIndex = 10;
@@ -226,7 +238,7 @@
             // 
             // btnConectPort
             // 
-            this.btnConectPort.Location = new System.Drawing.Point(35, 13);
+            this.btnConectPort.Location = new System.Drawing.Point(16, 13);
             this.btnConectPort.Name = "btnConectPort";
             this.btnConectPort.Size = new System.Drawing.Size(113, 23);
             this.btnConectPort.TabIndex = 11;
@@ -246,12 +258,136 @@
             this.rbtnManPote.UseVisualStyleBackColor = true;
             this.rbtnManPote.CheckedChanged += new System.EventHandler(this.rbtnManPote_CheckedChanged);
             // 
+            // nudCodoMunieca
+            // 
+            this.nudCodoMunieca.Location = new System.Drawing.Point(576, 106);
+            this.nudCodoMunieca.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudCodoMunieca.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudCodoMunieca.Name = "nudCodoMunieca";
+            this.nudCodoMunieca.Size = new System.Drawing.Size(120, 20);
+            this.nudCodoMunieca.TabIndex = 12;
+            this.nudCodoMunieca.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudCodoMunieca.ValueChanged += new System.EventHandler(this.nudCodoMunieca_ValueChanged);
+            // 
+            // nudHombro
+            // 
+            this.nudHombro.Location = new System.Drawing.Point(576, 152);
+            this.nudHombro.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudHombro.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudHombro.Name = "nudHombro";
+            this.nudHombro.Size = new System.Drawing.Size(120, 20);
+            this.nudHombro.TabIndex = 13;
+            this.nudHombro.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudHombro.ValueChanged += new System.EventHandler(this.nudHombro_ValueChanged);
+            // 
+            // nudBase
+            // 
+            this.nudBase.Location = new System.Drawing.Point(576, 198);
+            this.nudBase.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudBase.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudBase.Name = "nudBase";
+            this.nudBase.Size = new System.Drawing.Size(120, 20);
+            this.nudBase.TabIndex = 14;
+            this.nudBase.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudBase.ValueChanged += new System.EventHandler(this.nudBase_ValueChanged);
+            // 
+            // lblCodoMuniecaVel
+            // 
+            this.lblCodoMuniecaVel.AutoSize = true;
+            this.lblCodoMuniecaVel.Location = new System.Drawing.Point(493, 108);
+            this.lblCodoMuniecaVel.Name = "lblCodoMuniecaVel";
+            this.lblCodoMuniecaVel.Size = new System.Drawing.Size(77, 13);
+            this.lblCodoMuniecaVel.TabIndex = 15;
+            this.lblCodoMuniecaVel.Text = "Codo-Muñeca:";
+            // 
+            // lblHombroVel
+            // 
+            this.lblHombroVel.AutoSize = true;
+            this.lblHombroVel.Location = new System.Drawing.Point(493, 154);
+            this.lblHombroVel.Name = "lblHombroVel";
+            this.lblHombroVel.Size = new System.Drawing.Size(47, 13);
+            this.lblHombroVel.TabIndex = 16;
+            this.lblHombroVel.Text = "Hombro:";
+            // 
+            // lblBaseVel
+            // 
+            this.lblBaseVel.AutoSize = true;
+            this.lblBaseVel.Location = new System.Drawing.Point(493, 200);
+            this.lblBaseVel.Name = "lblBaseVel";
+            this.lblBaseVel.Size = new System.Drawing.Size(34, 13);
+            this.lblBaseVel.TabIndex = 17;
+            this.lblBaseVel.Text = "Base:";
+            // 
+            // rbtnConfiguracion
+            // 
+            this.rbtnConfiguracion.AutoSize = true;
+            this.rbtnConfiguracion.Location = new System.Drawing.Point(4, 93);
+            this.rbtnConfiguracion.Name = "rbtnConfiguracion";
+            this.rbtnConfiguracion.Size = new System.Drawing.Size(90, 17);
+            this.rbtnConfiguracion.TabIndex = 4;
+            this.rbtnConfiguracion.TabStop = true;
+            this.rbtnConfiguracion.Text = "Configuracion";
+            this.rbtnConfiguracion.UseVisualStyleBackColor = true;
+            this.rbtnConfiguracion.CheckedChanged += new System.EventHandler(this.rbtnConfiguracion_CheckedChanged);
+            // 
+            // lblTest2
+            // 
+            this.lblTest2.AutoSize = true;
+            this.lblTest2.Location = new System.Drawing.Point(346, 42);
+            this.lblTest2.Name = "lblTest2";
+            this.lblTest2.Size = new System.Drawing.Size(35, 13);
+            this.lblTest2.TabIndex = 18;
+            this.lblTest2.Text = "label2";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
-            this.ClientSize = new System.Drawing.Size(612, 289);
+            this.ClientSize = new System.Drawing.Size(711, 295);
+            this.Controls.Add(this.lblTest2);
+            this.Controls.Add(this.lblBaseVel);
+            this.Controls.Add(this.lblHombroVel);
+            this.Controls.Add(this.lblCodoMuniecaVel);
+            this.Controls.Add(this.nudBase);
+            this.Controls.Add(this.nudHombro);
+            this.Controls.Add(this.nudCodoMunieca);
             this.Controls.Add(this.btnConectPort);
             this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.lblTest);
@@ -272,6 +408,9 @@
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudCodoMunieca)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHombro)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudBase)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -296,6 +435,14 @@
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Button btnConectPort;
         private System.Windows.Forms.RadioButton rbtnManPote;
+        private System.Windows.Forms.NumericUpDown nudCodoMunieca;
+        private System.Windows.Forms.NumericUpDown nudHombro;
+        private System.Windows.Forms.NumericUpDown nudBase;
+        private System.Windows.Forms.Label lblCodoMuniecaVel;
+        private System.Windows.Forms.Label lblHombroVel;
+        private System.Windows.Forms.Label lblBaseVel;
+        private System.Windows.Forms.RadioButton rbtnConfiguracion;
+        private System.Windows.Forms.Label lblTest2;
     }
 }
 

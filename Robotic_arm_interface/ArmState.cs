@@ -2,6 +2,7 @@
 {
     enum ArmState
     {
+        CONFIGURACION,
         MANUAL,
         GRABACION,
         EJECUCION,

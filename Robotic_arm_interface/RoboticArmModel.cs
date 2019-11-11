@@ -36,6 +36,7 @@ namespace Robotic_arm_interface
             cmdsStatesPairs.Add(ArmState.GRABACION, 'o');
             cmdsStatesPairs.Add(ArmState.EJECUCION, 'p');
             cmdsStatesPairs.Add(ArmState.MANUAL_POTE, 'q');
+            cmdsStatesPairs.Add(ArmState.CONFIGURACION, 'r');
         }
 
         public void createMotors()
@@ -189,9 +190,40 @@ namespace Robotic_arm_interface
             interfaz.serialPortWrite(cmd);
         }
 
+        internal void configurar()
+        {
+            this.setState(ArmState.CONFIGURACION);
+            char cmd;
+            this.cmdsStatesPairs.TryGetValue(ArmState.CONFIGURACION, out cmd);
+            interfaz.serialPortWrite(cmd);
+        }
+
         internal void garraCmd()
         {
             interfaz.serialPortWrite(this.garraChar);
+        }
+
+        internal void velUpdate(MotorName motorName, decimal value)
+        {
+            if(armState == ArmState.CONFIGURACION)
+            {
+                switch (motorName)
+                {
+                    case MotorName.BASE:
+                        this.interfaz.serialPortWrite((char)0);
+                        break;
+                    case MotorName.HOMBRO:
+                        this.interfaz.serialPortWrite((char)1);
+                        break;
+                    case MotorName.CODO:
+                        this.interfaz.serialPortWrite((char)2);
+                        break;
+                    case MotorName.MUNIECA:
+                        this.interfaz.serialPortWrite((char)3);
+                        break;
+                }
+                this.interfaz.serialPortWrite((char)value);
+            }
         }
     }
 }

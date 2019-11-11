@@ -38,13 +38,14 @@ namespace Robotic_arm_interface
         }
         public void serialPortWrite(char cmd)
         {
-
-            
-           if (serialPort1.IsOpen)
+            int c = (int)cmd;
+            string test = c.ToString(); 
+            if (serialPort1.IsOpen)
             {
-            lblTest.Text = "se envio el comando " + cmd;
-            //lblTest.Text = "";
-            serialPort1.Write(""+cmd);
+                lblTest.Text = "se envio el comando " + cmd;
+                lblTest2.Text = "se envio el valor " + test;
+                //lblTest.Text = "";
+                serialPort1.Write(""+cmd);
             }
             else
             {
@@ -254,6 +255,11 @@ namespace Robotic_arm_interface
             if (rbtnManPote.Checked == true)
                 this.roboticArmModel.manualPote();
         }
+        private void rbtnConfiguracion_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbtnConfiguracion.Checked == true)
+                this.roboticArmModel.configurar();
+        }
 
         private void btnBaseA_MouseDown(object sender, MouseEventArgs e)
         {
@@ -343,6 +349,34 @@ namespace Robotic_arm_interface
         private void btnGarraA_S_MouseUp(object sender, MouseEventArgs e)
         {
             keyUp(garraC);
+        }
+
+        private void nud_ValueChanged(MotorName motorName, NumericUpDown nudVelocidad)
+        {
+            if (nudVelocidad.Value > nudVelocidad.Maximum)
+            {
+                nudVelocidad.Value = nudVelocidad.Maximum;
+            }
+            else if (nudVelocidad.Value < nudVelocidad.Minimum)
+            {
+                nudVelocidad.Value = nudVelocidad.Minimum;
+            }
+            this.roboticArmModel.velUpdate(motorName, nudVelocidad.Value);
+        }
+
+        private void nudCodoMunieca_ValueChanged(object sender, EventArgs e)
+        {
+            nud_ValueChanged(MotorName.MUNIECA, nudCodoMunieca);
+        }
+
+        private void nudHombro_ValueChanged(object sender, EventArgs e)
+        {
+            nud_ValueChanged(MotorName.HOMBRO, nudHombro);
+        }
+
+        private void nudBase_ValueChanged(object sender, EventArgs e)
+        {
+            nud_ValueChanged(MotorName.BASE, nudBase);
         }
 
 
